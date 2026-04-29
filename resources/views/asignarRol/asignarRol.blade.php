@@ -82,21 +82,23 @@
                 <h4>Seleccionar opción:</h4>
                 <br>
                 
-                 {!! Form::model($user, ['route'=>['asignar.update', $user], 'method'=>'PUT']) !!}
+                 <form action="{{ route('asignar.update', $user) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
                     @foreach ($roles as $role)
                         <div>
                             <label>
-                                {!! Form::checkbox('roles[]', $role->id, $user->hasAnyRole($role->id) ? : false, ['class'=>'mr-1']) !!}
+                                <input type="checkbox" name="roles[]" value="{{ $role->id }}" class="mr-1" {{ $user->hasAnyRole($role->id) ? 'checked' : '' }}>
                                 {{$role->name}}
                             </label>
 
                         </div>
                     @endforeach
 
-                    {!! Form::submit('Asignar Roles', ['class'=>'btn btn-primary mt-3']) !!}
+                    <button type="submit" class="btn btn-primary mt-3">Asignar Roles</button>
                          <a href="{{ url('admin/usuarios') }}" class="btn btn-success mt-3">Volver al listado</a>
-                    {!! Form::close() !!}
+                </form>
 
                   
                 </div>

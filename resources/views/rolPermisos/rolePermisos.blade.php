@@ -17,21 +17,23 @@
                 <h4><strong>Permisos asociados a este Rol</strong></h4>
                 <br>
                 
-                 {!! Form::model($role, ['route'=>['roles.update', $role], 'method'=>'PUT']) !!}
+                 <form action="{{ route('roles.update', $role) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
                     @foreach ($permisos as $permiso)
                         <div>
                             <label>
-                                {!! Form::checkbox('permisos[]', $permiso->id, $role->hasPermissionTo($permiso->id) ? : false, ['class'=>'mr-1']) !!}
+                                <input type="checkbox" name="permisos[]" value="{{ $permiso->id }}" class="mr-1" {{ $role->hasPermissionTo($permiso->id) ? 'checked' : '' }}>
                                 {{$permiso->name}}
                             </label>
 
                         </div>
                     @endforeach
 
-                    {!! Form::submit('Asignar permisos', ['class'=>'btn btn-primary mt-3']) !!}
+                    <button type="submit" class="btn btn-primary mt-3">Asignar permisos</button>
                     <a href="{{ url('roles/') }}" class="btn btn-success mt-3">Volver al listado</a>
-                    {!! Form::close() !!}
+                </form>
                 </div>
             </div>
         </div>
