@@ -60,7 +60,9 @@ class AsignarController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        if (!auth()->user()->hasRole('ADMINISTRADOR')) {
+            abort(403, 'Solo el administrador puede asignar roles.');
+        }
         $user = User::find($id);
         $user->roles()->sync($request->input('roles'));
         $role = Role::find($request->input('roles')[0]);

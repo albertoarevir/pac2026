@@ -96,7 +96,7 @@
 
     <!-- Axios -->
     {{--<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>--}}
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{{ asset('js/axios.min.js') }}"></script>
     <script>
         var access_token = '';
 
@@ -112,7 +112,7 @@
                 access_token = response.data.success.access_token;
 
                 // Guardamos el token en cookie
-                document.cookie = 'token_de_acceso=' + access_token;
+                document.cookie = 'token_de_acceso=' + access_token + '; SameSite=Strict; Path=/; Max-Age=3600';
 
                 // Insertar token y rut en los inputs ocultos para enviarlos al backend Laravel
                 document.getElementById('accessToken').value = access_token;

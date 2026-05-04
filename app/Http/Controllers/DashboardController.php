@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $departamentoIdUsuario = $user->departamento_id;
 
         // Obtener el departamento de Logística de manera robusta
-        $direccionLogistica = Departamento::where('detalle', 'Dirección de Logística')->first();
+        $direccionLogistica = Departamento::where('detalle', 'Direccion de Logistica')->first();
         $direccionLogisticaId = $direccionLogistica ? $direccionLogistica->id : null;
         $direccionLogisticaNombre = $direccionLogistica ? $direccionLogistica->detalle : 'Dirección de Logística'; // Fallback por si no se encuentra
 

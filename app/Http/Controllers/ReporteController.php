@@ -30,7 +30,7 @@ class ReporteController extends Controller
                 'pacs.year                          as anio',
                 'departamentos.detalle              as departamento',
                 'pacs.codigo                        as item_presupuestario',
-               'especies.detalle                   as especie', // <-- CAMBIADO: 'detalle' es el nombre real en la tabla
+               'especies.detalle                   as especie',
                 'pacs.cantidad                      as cantidad',
                 DB::raw('COALESCE((
                     SELECT SUM(pr.monto)
@@ -65,7 +65,7 @@ class ReporteController extends Controller
                 ) as comprometido'),
             ])
             ->join('departamentos', 'pacs.departamento_id', '=', 'departamentos.id')
-           ->leftJoin('especies', 'pacs.especie_id', '=', 'especies.id') // <-- Asegúrate que sea pacs.especie_id
+           ->leftJoin('especies', 'pacs.especie_id', '=', 'especies.id')
             ->leftJoin('modalidads', 'modalidads.id_proyecto', '=', 'pacs.id')
             ->leftJoin('estado_licitacions', 'modalidads.estado_id', '=', 'estado_licitacions.id')
             ->leftJoin('ordens', function ($join) {
@@ -73,7 +73,7 @@ class ReporteController extends Controller
                      ->on('ordens.id_licitacion', '=', 'modalidads.id');
             })
             ->leftJoin('estado_compras', 'ordens.estado_id', '=', 'estado_compras.id')
-            ->where('pacs.year', $selectedYear);
+            ->where('pacs.year', (string) $selectedYear);
 
         // ------------------------------------------------------------------
         // 2. Aplicación de filtros
@@ -85,11 +85,11 @@ class ReporteController extends Controller
         if ($request->filled('buscar')) {
             $buscar = $request->input('buscar');
             $query->where(function ($q) use ($buscar) {
-                $q->where('pacs.id', 'like', "%{$buscar}%")
-                  ->orWhere('pacs.codigo', 'like', "%{$buscar}%")
-                  ->orWhere('modalidads.numero', 'like', "%{$buscar}%")
-                  ->orWhere('ordens.numero', 'like', "%{$buscar}%")
-                  ->orWhere('departamentos.detalle', 'like', "%{$buscar}%");
+                $q->whereRaw('CAST("pacs"."id" AS TEXT) ILIKE ?', ["%{$buscar}%"])
+                  ->orWhere('pacs.codigo', 'ilike', "%{$buscar}%")
+                  ->orWhere('modalidads.numero', 'ilike', "%{$buscar}%")
+                  ->orWhere('ordens.numero', 'ilike', "%{$buscar}%")
+                  ->orWhere('departamentos.detalle', 'ilike', "%{$buscar}%");
             });
         }
 

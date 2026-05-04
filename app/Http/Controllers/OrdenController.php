@@ -120,7 +120,12 @@ class OrdenController extends Controller
     public function edit($id)
     {
         $orden = Orden::findOrFail($id);
-        $pac = Pac::find($id); // Nota: Verifica si esto debería ser Pac::find($orden->id_proyecto)
+        $user = auth()->user();
+        $pacOwner = Pac::find($orden->id_proyecto);
+        if ($user->departamento_id !== 7 && $pacOwner && $pacOwner->departamento_id !== $user->departamento_id) {
+            abort(403, 'No tienes permiso para editar esta orden.');
+        }
+        $pac = $pacOwner;
         $tipocompras = Tipocompra::all();
         $estados = EstadoLicitacion::all();
         $modalidad = Modalidad::find($orden->id_licitacion);
@@ -157,6 +162,11 @@ class OrdenController extends Controller
         $monto = str_replace(',', '.', $monto);
 
         $orden = Orden::findOrFail($id);
+        $user = auth()->user();
+        $pacOwner = Pac::find($orden->id_proyecto);
+        if ($user->departamento_id !== 7 && $pacOwner && $pacOwner->departamento_id !== $user->departamento_id) {
+            abort(403, 'No tienes permiso para modificar esta orden.');
+        }
         $orden->numero = $request->numero;
         $orden->estado_id = $request->estado_id;
         $orden->observacion = $request->observacion;
@@ -174,7 +184,13 @@ class OrdenController extends Controller
      */
     public function destroy($id)
     {
-        Orden::destroy($id);
+        $orden = Orden::findOrFail($id);
+        $user = auth()->user();
+        $pacOwner = Pac::find($orden->id_proyecto);
+        if ($user->departamento_id !== 7 && $pacOwner && $pacOwner->departamento_id !== $user->departamento_id) {
+            abort(403, 'No tienes permiso para eliminar esta orden.');
+        }
+        $orden->delete();
         return redirect()->route('ordenes.index')->with('mensaje', 'Se eliminó el registro correctamente');
     }
 }

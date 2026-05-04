@@ -185,8 +185,11 @@ class PacController extends Controller
 
     public function edit($id)
     {
-        // Obtener el registro que se va a editar
         $pac = Pac::findOrFail($id);
+        $user = auth()->user();
+        if ($user->departamento_id !== 7 && $pac->departamento_id !== $user->departamento_id) {
+            abort(403, 'No tienes permiso para editar este registro.');
+        }
 
         // Obtener los datos necesarios para los selectores
         $departamentos = Departamento::all();
@@ -242,8 +245,11 @@ class PacController extends Controller
         $presupuesto = str_replace('.', '', $request->presupuesto);
         $presupuesto = str_replace(',', '.', $presupuesto);
 
-        // Obtener el registro a actualizar
         $pac = Pac::findOrFail($id);
+        $user = auth()->user();
+        if ($user->departamento_id !== 7 && $pac->departamento_id !== $user->departamento_id) {
+            abort(403, 'No tienes permiso para modificar este registro.');
+        }
 
         // Actualizar los campos del registro
         $pac->year = $request->year;
@@ -314,7 +320,12 @@ class PacController extends Controller
 
     public function destroy($id)
     {
-        Pac::destroy($id);
+        $pac = Pac::findOrFail($id);
+        $user = auth()->user();
+        if ($user->departamento_id !== 7 && $pac->departamento_id !== $user->departamento_id) {
+            abort(403, 'No tienes permiso para eliminar este registro.');
+        }
+        $pac->delete();
         return redirect()->route('pac.index')->with('mensaje', 'Se eliminó el registro del control de Departamento');
     }
 

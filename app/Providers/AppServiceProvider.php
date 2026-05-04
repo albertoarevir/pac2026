@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(PacRechazadoEvent::class, CambiarEstadoModalidadListener::class);
 
         Gate::define('eliminar-proyecto', function (User $user) {
-            return $user->hasRole('admin');
+            return $user->hasRole('ADMINISTRADOR');
         });
 
         Gate::policy(Project::class, ProjectPolicy::class);
