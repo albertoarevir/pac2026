@@ -178,7 +178,13 @@ Route::post('/Autenti/registerUser', [App\Http\Controllers\Autenti\AutentiContro
    
 Route::resource('/presupuesto', \App\Http\Controllers\PresupuestoController::class)->names('presupuesto')->middleware('auth');
 
-Route::get('/reporte', [ReporteController::class, 'index'])->name('reporte.index');
-Route::get('/reporte/dashboard', [ReporteDashboardController::class, 'index'])->name('reporte.dashboard');
+//Route::get('/reporte', [ReporteController::class, 'index'])->name('reporte.index');
+//Route::get('/reporte/dashboard', [ReporteDashboardController::class, 'index'])->name('reporte.dashboard');
 
+
+// DESPUÉS ✅ - Con middleware auth
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reporte', [ReporteController::class, 'index'])->name('reporte.index');
+    Route::get('/reporte/dashboard', [ReporteDashboardController::class, 'index'])->name('reporte.dashboard');
+});
 

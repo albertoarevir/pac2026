@@ -4,37 +4,44 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
-// Importación de Modelos
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use App\Models\Pac;
 use App\Models\Modalidad;
-// Importación de Observers
+use App\Models\Orden;
+use App\Models\User;
+use App\Models\Project;
 use App\Observers\PacObserver;
 use App\Observers\ModalidadObserver;
-Use App\Observers\OrdenObserver;
-use App\Models\Orden;
+use App\Observers\OrdenObserver;
+use App\Events\PacRechazadoEvent;
+use App\Listeners\CambiarEstadoModalidadListener;
+use App\Policies\ProjectPolicy;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // 1. Forzar el uso de estilos de Bootstrap 5 en la paginación
         Paginator::useBootstrapFive();
 
-        // 2. Vincular el Observer para la tabla PAC
         Pac::observe(PacObserver::class);
-
-        // 3. Vincular el Observer para la tabla MODALIDADS
         Modalidad::observe(ModalidadObserver::class);
+        Orden::observe(OrdenObserver::class);
+
+        Event::listen(Registered::class, SendEmailVerificationNotification::class);
+        Event::listen(PacRechazadoEvent::class, CambiarEstadoModalidadListener::class);
+
+        Gate::define('eliminar-proyecto', function (User $user) {
+            return $user->hasRole('admin');
+        });
+
+        Gate::policy(Project::class, ProjectPolicy::class);
     }
 }

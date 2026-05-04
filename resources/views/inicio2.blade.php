@@ -251,6 +251,7 @@
             
             <div class="input-size"> 
                 <form id="form_login" name="form_login" method="post">
+                    @csrf
                     <input type="hidden" name="username" id="username">
                     <input type="hidden" name="timePass" id="timePass" value=''> 
                     
