@@ -63,11 +63,19 @@ class AsignarController extends Controller
         if (!auth()->user()->hasRole('ADMINISTRADOR')) {
             abort(403, 'Solo el administrador puede asignar roles.');
         }
+        $request->validate([
+            'roles'    => 'required|array',
+            'roles.*'  => 'integer|exists:roles,id',
+            'permisos' => 'nullable|json',
+        ]);
+
         $user = User::find($id);
         $user->roles()->sync($request->input('roles'));
         $role = Role::find($request->input('roles')[0]);
-        $permisos = json_decode($request->input('permisos'), true);
-        $role->givePermissionTo($permisos);
+        $permisos = $request->filled('permisos') ? json_decode($request->input('permisos'), true) : [];
+        if (is_array($permisos) && count($permisos) > 0) {
+            $role->givePermissionTo($permisos);
+        }
         $roles = Role::all();
         return redirect()->route('admin.usuarios.index', $user);
     }
