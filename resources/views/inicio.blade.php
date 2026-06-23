@@ -4,11 +4,11 @@
 <head>
     <title>Inicio de sesión</title>
 
-    <!-- Bootstrap 5 + Fontawesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    {{-- estilos --}}
+    <link href="{{ asset('plugins/bootstrap5/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/fontawesome5/css/all.min.css') }}" rel="stylesheet">
 
-    <style>
+    <style @cspNonce>
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #E3F2FD;
@@ -79,25 +79,24 @@
         }
     </style>
 
-<script>
-    
-    document.addEventListener("keydown", function(e) {
-        if (e.key === "F12") e.preventDefault();
-        if (e.ctrlKey && e.shiftKey && e.key === "I") e.preventDefault();
-        if (e.ctrlKey && e.shiftKey && e.key === "C") e.preventDefault();
-        if (e.ctrlKey && e.key === "U") e.preventDefault();
-        if (e.ctrlKey && e.key === "S") e.preventDefault();
-    });
+    <script @cspNonce>
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "F12") e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.key === "I") e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.key === "C") e.preventDefault();
+            if (e.ctrlKey && e.key === "U") e.preventDefault();
+            if (e.ctrlKey && e.key === "S") e.preventDefault();
+        });
 
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-</script>
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+    </script>
 
-    <!-- Axios -->
-    {{--<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>--}}
+    {{-- scripts --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> --}}
     <script src="{{ asset('js/axios.min.js') }}"></script>
-    <script>
+    <script @cspNonce>
         var access_token = '';
 
         function iniciar_sesion() {
@@ -140,6 +139,11 @@
             let pass = document.getElementById("clave_intranet");
             pass.type = pass.type === "password" ? "text" : "password";
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('btnSesion').addEventListener('click', iniciar_sesion);
+            document.getElementById('ver').addEventListener('change', hideOrShowPassword);
+        });
     </script>
 
 </head>
@@ -152,67 +156,73 @@
 
                 <div class="card shadow card-login">
                     <div class="row g-0">
-
-                        <!-- COLUMNA IZQUIERDA -->
                         <div
                             class="col-md-6 bg-left d-flex flex-column justify-content-center align-items-center text-center">
                             <img src="{{ asset('AutentificaTic/images/carabineros.png') }}" alt="Logo">
                             <h2 class="text-white mt-3">Sistema de Control del Plan Anual de Compras</h2>
                         </div>
-
-                        <!-- COLUMNA DERECHA -->
                         <div class="col-md-6 p-4">
-
-                            <!-- FORMULARIO -->
-                            <form id="formLogin" name="form1" method="POST" action="">
+                            <form id="formLogin" name="form1" method="POST" action="{{ route('login.api') }}">
                                 @csrf
                                 <div class="fondo-app">
                                     <div class="contenedor-centro">
-                                           <h3 class="logo-text mb-3">DIRECCIÓN DE LOGÍSTICA</h3>
+                                        <h3 class="logo-text mb-3">DIRECCIÓN DE LOGÍSTICA</h3>
                                         <p class="logo-text mb-4">Sistema Plan Anual de Compras</p>
-                                        <img src="{{ asset('AutentificaTic/images/carabineros.png') }}" class="logo" height="100px"; width="100px">
+                                        <img src="{{ asset('AutentificaTic/images/carabineros.png') }}" class="logo"
+                                            height="100px"; width="100px">
 
 
                                         <h4 class="logo-text mb-3">Inicio de Sesión</h4>
-                                       
+
                                         <div class="mb-3">
                                             <label for="rut_funcionario" class="form-label fw-bold">RUT</label>
                                             <input type="text" id="rut_funcionario" name="rut_funcionario_visible"
-                                                class="form-control custom-input" placeholder="Ej: Sin punto ni guión 12345678K" required>
+                                                class="form-control custom-input"
+                                                placeholder="Ej: Sin punto ni guión 12345678K" required>
                                         </div>
 
                                         <div class="mb-3">
                                             <label for="clave_intranet" class="form-label fw-bold">Contraseña</label>
                                             <input type="password" id="clave_intranet" name="clave_intranet"
-                                                class="form-control custom-input" placeholder="Ingrese su clave Intranet"
-                                                required>
+                                                class="form-control custom-input"
+                                                placeholder="Ingrese su clave Intranet" required>
                                         </div>
 
                                         <div class="mb-3 form-check">
                                             <input type="checkbox" class="form-check-input" id="ver"
-                                                onclick="hideOrShowPassword()">
+                                                >
                                             <label class="form-check-label" for="ver">Mostrar contraseña</label>
                                         </div>
-
-                                        <!-- Datos ocultos que el BACKEND Laravel sí necesita -->
                                         <input type="hidden" name="rut_funcionario" id="rutHidden">
                                         <input type="hidden" name="accessToken" id="accessToken">
 
-                                        <button type="button" id="btnSesion" class="btn-login"
-                                            onclick="iniciar_sesion()">
+                                        <button type="button" id="btnSesion" class="btn-login">
                                             Iniciar Sesión
                                         </button>
                                         <br>
                                         <br>
-                                      <p style="color: black; font-size: 15px;"><strong>Diseñado por ARM - Asesoría Técnica Dilocar - Mesa de ayuda IP-26407</strong></p>
-                                      <br>
-                                      <br>
-                                      <p style="color: rgb(121, 45, 45); font-size: 15px;"><strong>Sistema con validación AUTENTIFICATIC</strong></p>
+
+                                        <div style="float: left;">
+                                            <a href="http://autentificatic.carabineros.cl/password/reset"
+                                                style="width: 50%; color: white;">¿Olvidaste tu contraseña?</a>
+                                        </div>
+
+                                        <div style="float: right;">
+                                            <a href="http://autentificatic.carabineros.cl/register"
+                                                style="width: 50%; color: white;">Registrate en autentificatic</a>
+                                        </div>
+
+                                        <div style="clear: both; padding-bottom: 15px;"></div>
+                                        <p style="color: black; font-size: 15px;"><strong>Diseñado por ARM - Asesoría
+                                                Técnica Dilocar - Mesa de ayuda IP-26407</strong></p>
+                                        <br>
+                                        <br>
+                                        <p style="color: rgb(121, 45, 45); font-size: 15px;"><strong>Sistema con
+                                                validación AUTENTIFICATIC</strong></p>
                                     </div>
                                 </div>
 
                             </form>
-                            <!-- FIN FORMULARIO -->
 
                         </div>
                     </div>

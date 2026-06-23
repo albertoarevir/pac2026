@@ -85,7 +85,7 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="">Número Orden de Compra</label>
+                                    <label for="">Id Orden de Compra</label>
                                     <input type="texto" value="{{ old('numero') }}" name="numero" maxlength="15"
                                         class="form-control" required pattern="^[A-Z0-9-]+$" 
                                         oninput="this.value = this.value.toUpperCase()">
@@ -96,7 +96,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="">Monto $$</label>
+                                    <label for="">Monto O/C</label>
                                     <input type="numeric" id="monto" class="form-control" name="monto"
                                         value="{{ old('monto') }}" maxlength="15" oninput="formatNumber(this)"
                                         @error('monto') is-invalid @enderror required>
@@ -105,7 +105,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <script>
+                            <script @cspNonce>
                                 function formatNumber(input) {
                                     let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
                                     if (!isNaN(value)) {
@@ -199,7 +199,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <script @cspNonce>
         $(document).ready(function() {
             $('form').submit(function() {
                 $(this).find('button[type="submit"]').prop('disabled', true).text('Procesando...');

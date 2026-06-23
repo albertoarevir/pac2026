@@ -50,14 +50,17 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="">Departamento</label>
-                                                        <select name="Dotacion" id="Dotacion" class="form-control @error('Dotacion') is-invalid @enderror" required>
+                                                        <select name="departamento_id" id="departamento_id" class="form-control @error('departamento_id') is-invalid @enderror" required>
                                                             <option value="">-- Ingrese Departamento --</option>
                                                             @foreach ($departamentos as $departamento)
-                                                                <option value="{{ $departamento->detalle }}" {{ $usuario->Dotacion == $departamento->detalle ? 'selected' : '' }}>
+                                                                <option value="{{ $departamento->id }}" {{ $usuario->departamento_id == $departamento->id ? 'selected' : '' }}>
                                                                     {{ $departamento->detalle }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                        @error('departamento_id')
+                                                        <small style="color: red">{{$message}}</small>
+                                                        @enderror
                                                     </div>
                                                 </div>
 

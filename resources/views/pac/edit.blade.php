@@ -74,7 +74,7 @@
                                 </div>
 
 
-                                <script>
+                                <script @cspNonce>
                                     $(document).ready(function() {
                                         $('#departamento_id').on('change', function() {
                                             var departamentoId = $(this).val();
@@ -312,7 +312,7 @@
 
                     </form>
 
-                    <script>
+                    <script @cspNonce>
                         function cargarCodigos() {
                             let clasificadorId = document.getElementById('clasificador').value;
                             if (clasificadorId) {

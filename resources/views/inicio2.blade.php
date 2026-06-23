@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="assets/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/style.css"> 
     
-    <style>
+    <style @cspNonce>
         /* Estilo para el contenedor de mensajes de error */
         .alert-error-ui {
             background-color: #f8d7da;
@@ -33,7 +33,7 @@
         }
     </style>
     
-    <script>
+    <script @cspNonce>
         // Limpia el sessionStorage al cargar la página
         sessionStorage.clear(); 
 

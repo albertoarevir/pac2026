@@ -1,8 +1,8 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    <style>
+    <script src="{{ url('plugins/chartjs/chart.min.js') }}"></script>
+    <script src="{{ url('plugins/chartjs/chartjs-plugin-datalabels.min.js') }}"></script>
+    <style @cspNonce>
         /* Contenedor del semáforo para posicionar elementos */
         .semaforo-container {
             position: relative;
@@ -468,7 +468,7 @@
                                                 </div>
 
                                                 <div class="col-md-9">
-                                                    {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style> --}}
+                                                    {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style @cspNonce> --}}
                                                     <canvas id="proyectosPorDepartamentoChart"
                                                         style="border: 1px solid #7c2121; height: 100%; width: 100%;"></canvas>
                                                     {{-- Asegúrate de que el canvas también ocupe el 100% de la altura --}}
@@ -490,7 +490,7 @@
                                         <br>
                                         <div class="col-md-12">
                                             <div class="row">
-                                                {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style> --}}
+                                                {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style @cspNonce> --}}
                                                 <canvas id="chart2" style="border: 1px solid #7c2121;"></canvas>
                                             </div>
                                         </div>
@@ -611,13 +611,13 @@
                                         <div class="row" style="margin-left: 20px">
 
                                             <div class="col-md-6">
-                                                {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style> --}}
+                                                {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style @cspNonce> --}}
                                                 <canvas id="licitacionesEstadoChart"
                                                     style="border: 1px solid #7c2121;"></canvas>
                                             </div>
 
                                             <div class="col-md-6">
-                                                {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style> --}}
+                                                {{-- Se eliminó el estilo inline de height y width para usar el estilo global en <style @cspNonce> --}}
                                                 <canvas id="comprasEstadoChart"
                                                     style="border: 1px solid #7c2121;"></canvas>
                                             </div>
@@ -626,7 +626,7 @@
                                     </div>
 
                                     {{-- Script único para la inicialización de todos los gráficos --}}
-                                    <script>
+                                    <script @cspNonce>
                                         document.addEventListener('DOMContentLoaded', function() {
                                             // Registrar el plugin datalabels globalmente una vez
                                             Chart.register(ChartDataLabels);
@@ -1176,3 +1176,4 @@
         {{-- FIN: Detalles por Departamento --}}
     </div>
 @endsection
+           

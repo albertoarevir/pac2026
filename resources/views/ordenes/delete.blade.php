@@ -162,7 +162,7 @@
                             </div>
                         </div>
                             
-                        <script>
+                        <script @cspNonce>
                             function cargarCodigos() {
                                 let clasificadorId = document.getElementById('clasificador').value;
                                 if (clasificadorId) {
@@ -212,7 +212,7 @@
                             <button type="submit" class="btn btn-primary"><i class="bi bi-floppy2"></i> Actualizar registro</button>
                         </div>
                     </div>
-                    <script>
+                    <script @cspNonce>
                         function formatNumber(input) {
                             let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
                             if (!isNaN(value)) {

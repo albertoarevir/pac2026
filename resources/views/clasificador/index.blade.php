@@ -4,7 +4,7 @@
     <h2>Listado de Clasificador</h2>
 
 @if ($message = Session::get('mensaje'))
-    <script>
+    <script @cspNonce>
       Swal.fire({
       title: "Buen trabajo !!",
       text: "{{$message}}",
@@ -62,7 +62,7 @@
                             </button>
                         </form>
                          
-                        <script>
+                        <script @cspNonce>
                          
                           $('.formulario-eliminar').submit(function(e){
                                e.preventDefault();

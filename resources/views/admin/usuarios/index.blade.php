@@ -56,7 +56,7 @@
                         @endforeach
                     </tbody>
                 </table>
-                <script>
+                <script @cspNonce>
                     $(function() {
                         $("#example1").DataTable({
                             "pageLength": 5,

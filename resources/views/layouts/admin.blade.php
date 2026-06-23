@@ -1,21 +1,4 @@
 <!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
-<script>
-    document.addEventListener("keydown", function(e) {
-        if (e.key === "F12") e.preventDefault();
-        if (e.ctrlKey && e.shiftKey && e.key === "I") e.preventDefault();
-        if (e.ctrlKey && e.shiftKey && e.key === "C") e.preventDefault();
-        if (e.ctrlKey && e.key === "U") e.preventDefault();
-        if (e.ctrlKey && e.key === "S") e.preventDefault();
-    });
-
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-</script>
 <html lang="es">
 
 <head>
@@ -23,38 +6,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Plan Anual de Compras - Dilocar</title>
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome Icons -->
+    
+    <link rel="stylesheet" href="{{ url('plugins/source-sans-pro/source-sans-pro.css') }}">
+    
     <link rel="stylesheet" href="{{ url('plugins/fontawesome-free/css/all.min.css') }}">
-    <!-- Theme style -->
+    
     <link rel="stylesheet" href="{{ url('dist/css/adminlte.min.css') }}">
-    <!-- iconos de boostrap-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- jQuery -->
+    
+    <link rel="stylesheet" href="{{ url('plugins/bootstrap-icons/bootstrap-icons.min.css') }}">
+    
     <script src="{{ url('plugins/jquery/jquery.min.js') }}"></script>
 
-    <!-- SWEETALERT 2 MENSAJES DE ALERTAS  -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+    
+    <script src="{{ url('plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
 
-    <!-- DataTables -->
+    
     <link rel="stylesheet" href="{{ url('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ url('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ url('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 
 
 
+    @stack('styles')
 </head>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
 
-        <!-- Navbar -->
+        {{-- Navbar --}}
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <!-- Left navbar links -->
+            {{-- Left navbar links --}}
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
@@ -62,19 +43,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </li>
 
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="{{ url('/admin') }}" class="nav-link">Sistema Plan Anual de Compras - DIRECCIÓN DE
+                    <a href="{{url('dashboard/') }}" class="nav-link">Sistema Plan Anual de Compras - DIRECCIÓN DE
                         LOGÍSTICA</a>
                 </li>
             </ul>
 
-            <!-- Right navbar links -->
+            {{-- Right navbar links --}}
             <ul class="navbar-nav ml-auto">
-                <!-- Navbar Search -->
+                {{-- Navbar Search --}}
 
 
-                <!-- Messages Dropdown Menu -->
+                {{-- Messages Dropdown Menu --}}
 
-                <!-- Notifications Dropdown Menu -->
+                {{-- Notifications Dropdown Menu --}}
 
                 <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button">
@@ -88,12 +69,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </li>
             </ul>
         </nav>
-        <!-- /.navbar -->
+        {{-- /.navbar --}}
 
-        <!-- Main Sidebar Container -->
+        {{-- Main Sidebar Container --}}
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <!-- Brand Logo -->
-            <a href="{{ url('/admin') }}" class="brand-link">
+            {{-- Brand Logo --}}
+            <a href="{{ url('dashboard/') }}" class="brand-link">
                 <img src="{{ url('dist/img/carabineros.png') }}" alt="Logo Carabineros" class="brand-image elevation-3"
                     style="width: 30px; height: auto;">
                 <span class="brand-text font-weight-light">Pac-Dilocar</span>
@@ -101,9 +82,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
 
-            <!-- Sidebar -->
+            {{-- Sidebar --}}
             <div class="sidebar">
-                <!-- Sidebar user panel (optional) -->
+                {{-- Sidebar user panel (optional) --}}
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
 
                     <div class="info">
@@ -113,17 +94,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <a href="#" class="d-block" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
                             {{ Auth::user()->name }}</a>
                         <a href="#" class="d-block" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
-                            {{ Auth::user()->departamento->detalle }}<a>
+                            {{ Auth::user()->departamento->detalle }}</a>
                     </div>
                 </div>
 
 
-                <!-- Sidebar Menu -->
+                {{-- Sidebar Menu --}}
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-                        <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+                        {{-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library --}}
 
 
                         @can('MENU PERSONAL AUTORIZADO')
@@ -294,7 +275,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         @endcan
 
                         @can('MENU LICITACIONES')
-                            <!-- licitacion -->
+                            {{-- licitacion --}}
                             <li class="nav-item" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
                                 <a href="#" class="nav-link active">
                                     <i class="nav-icon fas bi bi-card-checklist"></i>
@@ -316,7 +297,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         @endcan
 
                         @can('MENU ORDENES DE COMPRA')
-                            <!-- Ordenn de compras -->
+                            {{-- Ordenn de compras --}}
                             <li class="nav-item" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
                                 <a href="#" class="nav-link active">
                                     <i class="nav-icon fas bi bi-cart-check"></i>
@@ -451,7 +432,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </li>
                         @endcan
 
-                        <!-- Menú Dashboard -->
+                        {{-- Menú Dashboard --}}
                         @can('MENU DASHBOARD')
                             <li class="nav-item" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
                                 <a href="#" class="nav-link active">
@@ -472,7 +453,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </ul>
                             </li>
                         @endcan
-                        <!-- Menú Reportes -->
+                        {{-- Menú Reportes --}}
                         @can('MENU REPORTES')
                             <li class="nav-item" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
                                 <a href="#" class="nav-link active">
@@ -489,7 +470,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <p>Ver Detalles</p>
                                         </a>
                                     </li>
-                                     
+                                      @can('DASHBOARD REPORTE')
+                                     <li class="nav-item">
+                                        <a href="{{ url('reporte/dashboard') }}" class="nav-link active">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Ver Dashboard</p>
+                                        </a>
+                                    </li>
+                                    @endcan
 
                                 </ul>
                             </li>
@@ -519,8 +507,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
                         <li class="nav-item" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
-                            <a href="#"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                            <a href="#" id="logout-link"
                                 class="nav-link" style="background-color: rgb(212, 23, 23)">
                                 <i class="nav-icon fas bi bi-door-closed-fill"></i>
                                 <p>
@@ -536,65 +523,58 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </li>
                     </ul>
                 </nav>
-                <!-- /.sidebar-menu -->
+                {{-- /.sidebar-menu --}}
             </div>
-            <!-- /.sidebar -->
+            {{-- /.sidebar --}}
         </aside>
 
         @if (($message = Session::get('mensaje')) && ($icono = Session::get('icono')))
-            <script>
-                Swal.fire({
-                    position: "top-end",
-                    icon: "{{ $icono }}",
-                    title: "{{ $message }}",
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            </script>
+            <div id="flash-notification"
+                 data-icon="{{ $icono }}"
+                 data-message="{{ e($message) }}"
+                 style="display:none;"></div>
         @endif
         <div class="content-wrapper">
             <div class="container-fluid" style="font-size: 14px; color:rgb(12, 13, 14); margin-bottom: 0;">
-                <br>
-
                 @yield('content')
 
 
             </div>
         </div>
 
-        <!-- Control Sidebar -->
+        {{-- Control Sidebar --}}
         <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
+            {{-- Add the sidebar's content here --}}
             <div class="p-3">
-                <h5>Title</h5>
-                <p>Sidebar content</p>
+                <h5>Pac Dilocar</h5>
+                <p></p>
             </div>
         </aside>
-        <!-- /.control-sidebar -->
+        {{-- /.control-sidebar --}}
 
-        <!-- Main Footer -->
+        {{-- Main Footer --}}
         <footer class="main-footer">
-            <!-- To the right -->
+            {{-- To the right --}}
             <div class="float-right d-none d-sm-inline"
                 style="font-size: 14px; color:rgb(107, 111, 116); margin-bottom: 0;">
                 Versión 1.0.
             </div>
-            <!-- Default to the left -->
+            {{-- Default to the left --}}
             <strong style="font-size: 14px; color:rgb(107, 111, 116); margin-bottom: 0;">Diseñado por Suboficial (Sec.)
                 Rivera - Asesoría Técnica - Dirección de Logística &copy; Marzo - 2025 <a
                     href="{{ url('/admin') }}">"Sistema Registro y Control "Plan Anual de Compras"</a></strong>.
         </footer>
     </div>
-    <!-- ./wrapper -->
+    {{-- ./wrapper --}}
 
-    <!-- REQUIRED SCRIPTS -->
+    
 
 
-    <!-- Bootstrap 4 -->
+    
     <script src="{{ url('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
 
-    <!-- DataTables  & Plugins -->
+    
     <script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ url('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ url('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
@@ -610,8 +590,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
 
-    <!-- AdminLTE App -->
+    {{-- scripts --}}
     <script src="{{ url('dist/js/adminlte.min.js') }}"></script>
+    <script src="{{ url('js/flash.js') }}"></script>
+    <script @cspNonce>
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.getElementById('logout-form').submit();
+                });
+            }
+        });
+    </script>
+    @stack('scripts')
 </body>
 
 </html>

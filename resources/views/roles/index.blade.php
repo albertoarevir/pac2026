@@ -58,7 +58,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <script>
+                    <script @cspNonce>
                         $(function() {
                             $("#example1").DataTable({
                                 "pageLength": 5,
@@ -114,7 +114,7 @@
                         });
                     </script>
 
-                    <script>
+                    <script @cspNonce>
                         $(document).ready(function() {
                             $('.formulario-eliminar').submit(function(e) {
                                 e.preventDefault();

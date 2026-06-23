@@ -110,7 +110,7 @@
         </div>
     </div>
 
-    <script>
+    <script @cspNonce>
         // Al cargar la página, si hay un clasificador seleccionado, cargar sus códigos
         document.addEventListener("DOMContentLoaded", function() {
             if (document.getElementById('clasificador').value) {

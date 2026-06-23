@@ -47,10 +47,14 @@ class AsignarController extends Controller
      */
     public function edit(string $id)
     {
-        //
-        $user = User::find($id);
-        $permiso = Permission::all();
+        $authUser = auth()->user();
+        $user = User::findOrFail($id);
 
+        if ($authUser->departamento_id !== 7 && $user->departamento_id !== $authUser->departamento_id) {
+            abort(403, 'No tienes permiso para gestionar usuarios de otro departamento.');
+        }
+
+        $permiso = Permission::all();
         $roles = Role::all();
         return view('asignarRol/asignarRol', compact('user', 'roles', 'permiso'));
     }
@@ -63,20 +67,22 @@ class AsignarController extends Controller
         if (!auth()->user()->hasRole('ADMINISTRADOR')) {
             abort(403, 'Solo el administrador puede asignar roles.');
         }
+
+        $authUser = auth()->user();
+        $user = User::findOrFail($id);
+
+        if ($authUser->departamento_id !== 7 && $user->departamento_id !== $authUser->departamento_id) {
+            abort(403, 'No tienes permiso para gestionar usuarios de otro departamento.');
+        }
+
         $request->validate([
             'roles'    => 'required|array',
             'roles.*'  => 'integer|exists:roles,id',
             'permisos' => 'nullable|json',
         ]);
 
-        $user = User::find($id);
         $user->roles()->sync($request->input('roles'));
-        $role = Role::find($request->input('roles')[0]);
-        $permisos = $request->filled('permisos') ? json_decode($request->input('permisos'), true) : [];
-        if (is_array($permisos) && count($permisos) > 0) {
-            $role->givePermissionTo($permisos);
-        }
-        $roles = Role::all();
+
         return redirect()->route('admin.usuarios.index', $user);
     }
     /**

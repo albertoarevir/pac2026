@@ -1,4 +1,4 @@
-/.phpunit.cache
+﻿/.phpunit.cache
 /node_modules
 /public/build
 /public/hot
@@ -18,3 +18,16 @@ yarn-error.log
 /.vscode
 public/adminer.php
 routes/web.php.tmp.*
+# Archivos temporales de editores y sed
+*.tmp.*
+sed[0-9A-Za-z]*
+resources/views/sed*
+
+# Scripts de mantenimiento con datos sensibles
+public/oc_*.php
+public/clear_cache.php
+
+# Documentación interna
+INFORME_SEGURIDAD.md
+MANUAL_DE_USUARIO.md
+docs/

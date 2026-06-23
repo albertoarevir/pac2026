@@ -50,7 +50,7 @@
                                 </div>
 
 
-                                <script>
+                                <script @cspNonce>
                                     $(document).ready(function() {
                                         $('#departamento').on('change', function() {
                                             var departamentoId = $(this).val();
@@ -80,8 +80,7 @@
                                     <div class="form-group">
                                         <label for="">Clasificador Presupuestario</label>
                                         <select name="clasificador" id="clasificador" class="form-control"
-                                            onchange="cargarCodigos()" @error('clasificador') is-invalid @enderror"
-                                            required>
+                                            @error('clasificador') is-invalid @enderror" required>
                                             <option value="">-- Seleccione un clasificador --</option>
                                             @foreach ($clasificadors as $clasificador)
                                                 <option value="{{ $clasificador->codigo_id }}">
@@ -124,7 +123,9 @@
                             </div>
 
 
-                            <script>
+                            <script @cspNonce>
+                                document.getElementById('clasificador').addEventListener('change', cargarCodigos);
+
                                 function cargarCodigos() {
                                     let clasificadorId = document.getElementById('clasificador').value;
                                     if (clasificadorId) {
@@ -167,7 +168,7 @@
                                         registro</button>
                                 </div>
                             </div>
-                            <script>
+                            <script @cspNonce>
                                 function formatNumber(input) {
                                     let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
                                     if (!isNaN(value)) {

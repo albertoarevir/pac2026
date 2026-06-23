@@ -62,24 +62,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6" >
-                                    <div class="form-group">
-                                        <label for="">Password</label>
-                                        <input type="password" name="password" class="form-control" required>
-                                        @error('password')
-                                        <small style="color: red">{{$message}}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                         
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="">Repetir Password</label>
-                                        <input type="password" name="password_confirmation" class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
         
                         <hr>
                         <div class="row">

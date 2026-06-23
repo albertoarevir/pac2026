@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(fn() => route('login.custom'));
 
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
         $middleware->alias([
             'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
@@ -22,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Sesión expirada (419)
         $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, Request $request) {
             if ($e->getStatusCode() == 419) {
                 \Illuminate\Support\Facades\Auth::logout();
@@ -29,5 +32,19 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->route('login.custom')
                     ->with('info', 'Su sesión ha expirado por inactividad. Por favor, ingrese de nuevo.');
             }
+        });
+
+        // Sin permiso (rol o permiso de Spatie)
+        $exceptions->renderable(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, Request $request) {
+            return redirect()
+                ->route('login.custom')
+                ->with('info', 'No tienes permiso para acceder a esa sección.');
+        });
+
+        // Ruta no encontrada (404)
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, Request $request) {
+            return redirect()
+                ->route('login.custom')
+                ->with('info', 'La página que buscas no existe.');
         });
     })->create();

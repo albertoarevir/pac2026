@@ -27,9 +27,11 @@
                 <div class="col-md-1">
                     <label class="form-label small fw-bold">Acción</label>
                     <select name="accion" class="form-control form-control-sm">
-                        <option value="">--</option>
-                        <option value="crear" {{ request('accion') == 'crear' ? 'selected' : '' }}>Crear</option>
-                        <option value="editar" {{ request('accion') == 'editar' ? 'selected' : '' }}>Editar</option>
+                        <option value="">-- Todas --</option>
+                        <option value="login"    {{ request('accion') == 'login'    ? 'selected' : '' }}>Login</option>
+                        <option value="logout"   {{ request('accion') == 'logout'   ? 'selected' : '' }}>Logout</option>
+                        <option value="crear"    {{ request('accion') == 'crear'    ? 'selected' : '' }}>Crear</option>
+                        <option value="editar"   {{ request('accion') == 'editar'   ? 'selected' : '' }}>Editar</option>
                         <option value="eliminar" {{ request('accion') == 'eliminar' ? 'selected' : '' }}>Eliminar</option>
                     </select>
                 </div>
@@ -66,7 +68,7 @@
                     <th>Fecha / Hora</th>
                     <th>Funcionario</th>
                     <th>Departamento</th>
-                    <th>Módulo</th> 
+                    <th>Módulo</th>
                     <th>ID Proy.</th>
                     <th>Acción</th>
                     <th style="width: 20%;">Estado Anterior</th>
@@ -87,7 +89,17 @@
                     <td class="text-center small">{{ $b->modulo }}</td>
                     <td class="text-center"><strong>{{ $b->proyecto_id ?? 'N/A' }}</strong></td>
                     <td class="text-center">
-                        <span class="badge {{ $b->accion == 'crear' ? 'bg-success' : ($b->accion == 'editar' ? 'bg-warning text-dark' : 'bg-danger') }}">
+                        @php
+                            $badgeClass = match(strtolower($b->accion)) {
+                                'login'    => 'bg-primary',
+                                'logout'   => 'bg-secondary',
+                                'crear'    => 'bg-success',
+                                'editar'   => 'bg-warning text-dark',
+                                'eliminar' => 'bg-danger',
+                                default    => 'bg-secondary',
+                            };
+                        @endphp
+                        <span class="badge {{ $badgeClass }}">
                             {{ strtoupper($b->accion) }}
                         </span>
                     </td>
@@ -108,20 +120,17 @@
         </table>
     </div>
 
-   <div class="d-flex justify-content-between align-items-center mt-3">
-    <div class="text-muted small">
-        Mostrando {{ $bitacoras->firstItem() }} a {{ $bitacoras->lastItem() }} 
-        de {{ $bitacoras->total() }} resultados
-    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="text-muted small">
+            Mostrando {{ $bitacoras->firstItem() }} a {{ $bitacoras->lastItem() }}
+            de {{ $bitacoras->total() }} resultados
+        </div>
 
-    <div class="d-flex justify-content-between align-items-center mt-3 mb-5">
-        
-
-        <div class="pagination-sm">
-            {{ $bitacoras->withQueryString()->links('pagination::bootstrap-4') }}
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-5">
+            <div class="pagination-sm">
+                {{ $bitacoras->withQueryString()->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
-
-</div>
 </div>
 @endsection

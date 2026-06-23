@@ -1,8 +1,6 @@
 @extends('layouts.admin')
-@section('content')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
+@push('styles')
 <style>
 /* ============================================================
    VARIABLES
@@ -28,9 +26,17 @@
 }
 
 /* ============================================================
-   LAYOUT BASE
+   LAYOUT BASE CORREGIDO
 ============================================================ */
-.db-wrap { padding: 6px 32px 48px; }
+.db-wrap { 
+    padding: 6px 24px 32px; 
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Evita desbordamiento horizontal que sube el footer */
+}
 
 /* ============================================================
    ENCABEZADO
@@ -103,9 +109,10 @@
 ============================================================ */
 .db-section {
     margin-bottom: 28px;
+    width: 100%;
 }
 .db-section-title {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .07em;
@@ -173,7 +180,7 @@
 .kpi-card.gray   .kpi-icon { background: #f1f5f9;           color: var(--neutral); }
 
 .kpi-label {
-    font-size: 10.5px;
+    font-size: 16.5px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .05em;
@@ -181,7 +188,7 @@
     margin: 0 0 3px;
 }
 .kpi-value {
-    font-size: 20px;
+    font-size: 26px;
     font-weight: 800;
     color: var(--pri);
     margin: 0;
@@ -220,7 +227,7 @@
 .semaforo-kpi-estado { font-size: 14px; font-weight: 800; color: var(--pri); }
 
 /* ============================================================
-   CHART CARDS
+   CHART CARDS CORREGIDOS
 ============================================================ */
 .chart-card {
     background: #fff;
@@ -228,10 +235,12 @@
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
     padding: 18px 20px 14px;
-    height: 100%;
+    height: auto;
+    min-height: 100%;
+    box-sizing: border-box;
 }
 .chart-card-title {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 800;
     color: var(--pri);
     text-transform: uppercase;
@@ -259,12 +268,13 @@
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
+    width: 100%;
 }
 .tabla-depto-header {
     background: var(--pri);
     color: #fff;
     padding: 13px 20px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .05em;
@@ -275,12 +285,12 @@
 .tabla-depto {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 16px;
 }
 .tabla-depto thead th {
     background: #f8faff;
     color: var(--neutral);
-    font-size: 11px;
+    font-size: 16px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .04em;
@@ -303,10 +313,10 @@
 .tabla-depto tbody tr:hover { background: #eff4ff; transition: background .1s; }
 .tabla-depto tfoot td {
     background: var(--pri);
-    color: #fff;
+    color: #ffffff;
     font-weight: 800;
     padding: 11px 16px;
-    font-size: 13px;
+    font-size: 16px;
 }
 .tabla-depto tfoot td:not(:first-child) { text-align: right; }
 
@@ -322,16 +332,16 @@
 .fill-g { background: var(--success); }
 .fill-y { background: var(--warn); }
 .fill-r { background: var(--danger); }
-.pbar-pct { font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }
+.pbar-pct { font-size: 14px; font-weight: 700; min-width: 46px; text-align: right; }
 .pct-g { color: var(--success); }
 .pct-y { color: var(--warn); }
 .pct-r { color: var(--danger); }
 
 /* Badge semáforo en tabla */
 .badge-sema {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 10.5px; font-weight: 700;
-    padding: 3px 9px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700;
+    padding: 4px 11px; border-radius: 20px;
 }
 .badge-verde   { background: var(--success-lt); color: var(--success); }
 .badge-amarillo{ background: var(--warn-lt);   color: var(--warn); }
@@ -352,7 +362,7 @@
     gap: 7px;
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     border: 1px solid currentColor;
 }
@@ -361,9 +371,11 @@
 .criterio-pill.rojo    { background: var(--danger-lt);  color: var(--danger); }
 .criterio-dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
 </style>
+@endpush
 
+@section('content')
 {{-- ============================================================
-     WRAPPER
+     WRAPPER PRINCIPAL
 ============================================================ --}}
 <div class="db-wrap">
 
@@ -380,19 +392,17 @@
            display:inline-flex; align-items:center; gap:6px;
            background:var(--pri); color:#fff; border-radius:8px;
            padding:8px 16px; font-size:13px; font-weight:700;
-           transition:background .2s;"
-           onmouseover="this.style.background='#1d4ed8'"
-           onmouseout="this.style.background='var(--pri)'">
+           transition:background .2s;">
             <i class="bi bi-table"></i> Ver Reporte Detallado
         </a>
     </div>
 
     {{-- FILTROS --}}
-    <form action="{{ route('dashboard') }}" method="GET">
+    <form id="filtros-dashboard" action="{{ route('dashboard') }}" method="GET">
         <div class="filtro-bar">
             <div class="filtro-group">
                 <label><i class="bi bi-calendar3 me-1"></i>Año</label>
-                <select name="year" onchange="this.form.submit()">
+                <select name="year" class="autosubmit">
                     @foreach ($availableYears as $year)
                         <option value="{{ $year }}" {{ (string)$year === (string)$selectedYear ? 'selected' : '' }}>
                             {{ $year }}
@@ -402,7 +412,7 @@
             </div>
             <div class="filtro-group">
                 <label><i class="bi bi-building me-1"></i>Departamento</label>
-                <select name="departamento_id" onchange="this.form.submit()">
+                <select name="departamento_id" class="autosubmit">
                     @foreach ($availableDepartmentsForSelect as $departamento)
                         <option value="{{ $departamento->id }}"
                             {{ (string)$departamento->id === (string)$selectedDepartamentoId ? 'selected' : '' }}>
@@ -441,7 +451,7 @@
                 <div class="kpi-icon"><i class="bi bi-currency-dollar"></i></div>
                 <div>
                     <p class="kpi-label">Total Presupuesto</p>
-                    <p class="kpi-value sm">$ {{ number_format($total_presupuesto_general, 0, ',', '.') }}</p>
+                    <p class="kpi-value">$ {{ number_format($total_presupuesto_general, 0, ',', '.') }}</p>
                     <p class="kpi-meta"><a href="{{ url('/pac') }}" style="color:var(--pri-mid);">Ver detalle →</a></p>
                 </div>
             </div>
@@ -450,7 +460,7 @@
                 <div class="kpi-icon"><i class="bi bi-graph-up-arrow"></i></div>
                 <div>
                     <p class="kpi-label">Total Comprometido</p>
-                    <p class="kpi-value sm">$ {{ number_format($total_comprometido_general, 0, ',', '.') }}</p>
+                    <p class="kpi-value">$ {{ number_format($total_comprometido_general, 0, ',', '.') }}</p>
                     <p class="kpi-meta"><a href="{{ url('/pac') }}" style="color:var(--success);">Ver detalle →</a></p>
                 </div>
             </div>
@@ -459,7 +469,7 @@
                 <div class="kpi-icon"><i class="bi bi-wallet2"></i></div>
                 <div>
                     <p class="kpi-label">Saldo Disponible</p>
-                    <p class="kpi-value sm" style="{{ $saldo < 0 ? 'color:var(--danger)' : '' }}">
+                    <p class="kpi-value" style="{{ $saldo < 0 ? 'color:var(--danger)' : '' }}">
                         $ {{ number_format($saldo, 0, ',', '.') }}
                     </p>
                 </div>
@@ -477,8 +487,8 @@
             <div class="semaforo-kpi" style="grid-column: span 1;">
                 <span class="semaforo-dot {{ $dotClass }}"></span>
                 <div>
-                    <p class="semaforo-kpi-label">Estado KPI General</p>
-                    <p class="semaforo-kpi-estado">{{ $estadoTexto }}</p>
+                    <p class="kpi-label">Estado KPI General</p>
+                    <p class="kpi-value">{{ $estadoTexto }}</p>
                 </div>
             </div>
         </div>
@@ -676,7 +686,7 @@
                                 </td>
                                 <td>
                                     <span class="badge-sema {{ $badgeDepto }}">
-                                        <i class="bi bi-circle-fill" style="font-size:7px;"></i>
+                                        <i class="bi bi-circle-fill" style="font-size:16px;"></i>
                                         {{ $estadoDepto }}
                                     </span>
                                 </td>
@@ -702,20 +712,34 @@
         @else
             <div style="text-align:center; padding:2rem; color:var(--neutral); background:#fff;
                         border-radius:var(--radius); border:1px solid var(--border);">
-                <i class="bi bi-inbox" style="font-size:2rem; display:block; margin-bottom:.5rem;"></i>
+                <i class="bi bi-inbox" style="font-size:5rem; display:block; margin-bottom:.5rem;"></i>
                 No hay datos disponibles para los filtros aplicados.
             </div>
         @endif
     </div>
 
-</div>{{-- /db-wrap --}}
+    {{-- CIERRE ABSOLUTO DE FLUJO PARA EL CONTENT MANAGER DEL LAYOUT --}}
+    <div style="clear: both; height: 1px;"></div>
 
-{{-- ============================================================
-     SCRIPTS GRÁFICOS
-============================================================ --}}
-<script>
+</div>{{-- /db-wrap --}}
+@endsection
+
+@push('scripts')
+<script src="{{ url('plugins/chartjs/chart.min.js') }}"></script>
+<script src="{{ url('plugins/chartjs/chartjs-plugin-datalabels.min.js') }}"></script>
+<script @cspNonce>
 document.addEventListener('DOMContentLoaded', function () {
-    Chart.register(ChartDataLabels);
+    document.querySelectorAll('.autosubmit').forEach(function(sel) {
+        sel.addEventListener('change', function() { this.form.submit(); });
+    });
+
+    if (typeof Chart === 'undefined') {
+        document.querySelectorAll('.chart-wrap canvas').forEach(function(c) {
+            c.parentElement.innerHTML = '<p style="color:red;padding:10px;">Chart.js no cargado</p>';
+        });
+        return;
+    }
+    try { Chart.register(ChartDataLabels); } catch(e) {}
 
     const PALETA = [
         'rgba(37,99,235,.75)',  'rgba(22,163,74,.75)',  'rgba(217,119,6,.75)',
@@ -744,7 +768,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     datalabels: {
                         anchor: 'end', align: 'end',
                         color: '#1e3a8a',
-                        font: { weight: 'bold', size: 10 },
+                        font: { weight: 'bold', size: 12 },
                         formatter: v => '$ ' + Number(v).toLocaleString('es-CL')
                     }
                 },
@@ -756,7 +780,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     datalabels: {
                         anchor: 'end', align: 'end',
                         color: '#166534',
-                        font: { weight: 'bold', size: 10 },
+                        font: { weight: 'bold', size: 12 },
                         formatter: v => '$ ' + Number(v).toLocaleString('es-CL')
                     }
                 }
@@ -782,7 +806,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         callback: v => '$ ' + Number(v).toLocaleString('es-CL')
                     }
                 },
-                x: { ticks: { font: { size: 10 } } }
+                x: { ticks: { font: { size: 12 } } }
             }
         }
     });
@@ -806,7 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 datalabels: {
                     anchor: 'end', align: 'end',
                     color: '#1e293b',
-                    font: { weight: 'bold', size: 12 },
+                    font: { weight: 'bold', size: 13 },
                     formatter: v => v
                 }
             }]
@@ -820,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             scales: {
                 y: { beginAtZero: true, max: maxProy + 2, ticks: { precision: 0, font: { size: 10 } } },
-                x: { ticks: { font: { size: 10 } } }
+                x: { ticks: { font: { size: 12 } } }
             }
         }
     });
@@ -880,5 +904,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
-@endsection
+@endpush

@@ -200,7 +200,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <script @cspNonce>
         function formatNumber(input) {
             let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
             if (!isNaN(value)) {
@@ -276,7 +276,7 @@
         });
     </script>
 
-    <script>
+    <script @cspNonce>
         $('.formulario-eliminar').submit(function(e) {
             e.preventDefault();
 

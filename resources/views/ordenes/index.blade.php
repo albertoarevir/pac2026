@@ -26,7 +26,7 @@
                                 <th style="width: 2%"> Id Licitación</th>
                                 <th style="width: 5%"> Especie o Servicio</th>
                                 <th style="width: 15%;">Modalidad de compra</th>
-                                <th style="width: 4%;">Numero Orden de Compra</th>
+                                <th style="width: 4%;">Id Orden de Compra</th>
                                 <th style="width: 4%;">Monto $$</th>
                                 <th style="width: 5%;">Estado</th>
                                 {{-- <th style="width: 19%">Observación</th> --}}
@@ -129,7 +129,7 @@
 
 
 
-                    <script>
+                    <script @cspNonce>
                         function formatNumber(input) {
                             let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
                             if (!isNaN(value)) {
@@ -205,7 +205,7 @@
                         });
                     </script>
 
-                    <script>
+                    <script @cspNonce>
                         $('.formulario-eliminar').submit(function(e) {
                             e.preventDefault();
                             Swal.fire({

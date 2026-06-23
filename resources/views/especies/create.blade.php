@@ -4,7 +4,7 @@
         <h2>Ingresar Nueva Especie o Servicio</h2>
 
         @if ($message = Session::get('mensaje'))
-            <script>
+            <script @cspNonce>
                 Swal.fire({
                     title: "Buen trabajo !!",
                     text: "{{ $message }}",

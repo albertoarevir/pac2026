@@ -13,7 +13,7 @@
     <script src="{{ asset('AutentificaTic/js/axios.min.js') }}"></script>
     <script src="{{ asset('AutentificaTic/js/cookies.min.js') }}"></script>
 
-<style>
+<style @cspNonce>
     /* --- FONDO COMPLETO SIN SCROLL --- */
    
 
@@ -93,7 +93,7 @@
    
 </style>
 
-    <script>
+    <script @cspNonce>
         $(document).ready(function() {
             document.title = 'Plan Anual de Compras';
         });

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Models\Bitacora;
 
 class ApiLoginController extends Controller
 {
@@ -28,20 +29,20 @@ class ApiLoginController extends Controller
         $ip    = $request->ip();
 
         try {
+            // RIESGO: API sin HTTPS. Solicitar a TIC habilitar TLS en autentificaticapi.carabineros.cl
             $response = Http::timeout(10)->withHeaders([
                 'Authorization' => 'Bearer ' . $token,
                 'Accept'        => 'application/json',
-            ])->get('http://autentificaticapi.carabineros.cl/api/auth/validate-token');
+            ])->get(config('services.autentificatic.url'));
 
             if ($response->failed()) {
-                Log::warning('Login fallido: token inválido', ['rut' => $rut, 'ip' => $ip, 'status' => $response->status()]);
-                $errorMessage = $response->json('message') ?? $response->body();
-                return back()->withErrors(['msg' => 'La sesión con la API Institucional no es válida o su token ha expirado.']);
+                Log::warning('Login fallido: token invalido', ['rut' => $rut, 'ip' => $ip, 'status' => $response->status()]);
+                return back()->withErrors(['msg' => 'La sesion con la API Institucional no es valida o su token ha expirado.']);
             }
 
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            Log::error('Error de conexión con Autentificatic API: ' . $e->getMessage(), ['ip' => $ip]);
-            return back()->withErrors(['msg' => 'Error de conexión con el servidor de validación. Intente nuevamente.']);
+            Log::error('Error de conexion con Autentificatic API: ' . $e->getMessage(), ['ip' => $ip]);
+            return back()->withErrors(['msg' => 'Error de conexion con el servidor de validacion. Intente nuevamente.']);
         } catch (\Exception $e) {
             Log::error('Error inesperado en login API: ' . $e->getMessage(), ['ip' => $ip]);
             return back()->withErrors(['msg' => 'Error inesperado al validar token.']);
@@ -51,14 +52,35 @@ class ApiLoginController extends Controller
 
         if (!$user) {
             Log::warning('Login fallido: RUT autenticado en API pero sin cuenta local', ['rut' => $rut, 'ip' => $ip]);
-            return back()->withErrors(['msg' => 'Usted se autenticó correctamente en la API, pero no tiene cuenta habilitada en PacDilocar. Contacte al administrador.']);
+            Bitacora::create([
+                'user_id'     => null,
+                'modulo'      => 'Acceso al Sistema',
+                'accion'      => 'login_sin_cuenta',
+                'descripcion' => 'RUT validado en API institucional pero sin cuenta local: ' . $rut,
+                'ip'          => $ip,
+                'user_agent'  => request()->userAgent(),
+            ]);
+            return back()->withErrors(['msg' => 'Usted se autentico correctamente en la API, pero no tiene cuenta habilitada en PacDilocar. Contacte al administrador.']);
         }
 
         Auth::login($user);
         $request->session()->regenerate();
 
+        Bitacora::create([
+            'user_id'     => $user->id,
+            'modulo'      => 'Acceso al Sistema',
+            'accion'      => 'login',
+            'descripcion' => 'Inicio de sesion exitoso via API institucional',
+            'ip'          => $ip,
+            'user_agent'  => $request->userAgent(),
+        ]);
+
         Log::info('Login exitoso', ['rut' => $rut, 'user_id' => $user->id, 'ip' => $ip]);
 
-        return redirect()->intended(route('admin.index'));
+        $destination = $user->hasRole('ADMINISTRADOR')
+            ? route('admin.index')
+            : route('pac.index');
+
+        return redirect()->intended($destination);
     }
 }

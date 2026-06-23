@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pac;
 use App\Models\Departamento;
+use App\Models\EstadoLicitacion;
+use App\Models\EstadoCompra;
 use App\Models\Especie;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -14,15 +16,29 @@ class ReporteController extends Controller
 {
     public function index(Request $request)
     {
+        $user    = auth()->user();
+        $isAdmin = $user->departamento_id === 7;
         $currentYear    = now()->year;
         $availableYears = range($currentYear, $currentYear - 4);
         $selectedYear   = $request->input('year', $currentYear);
 
-        $departamentos          = Departamento::orderBy('detalle')->get();
+        $departamentos = $isAdmin
+            ? Departamento::orderBy('detalle')->get()
+            : Departamento::where('id', $user->departamento_id)->get();
+
         $selectedDepartamentoId = $request->input('departamento_id');
 
+        $estadosLicitacion          = EstadoLicitacion::orderBy('detalle')->get();
+        $selectedEstadoLicitacionId = $request->input('estado_licitacion_id');
+
+        $estadosCompra          = EstadoCompra::orderBy('detalle')->get();
+        $selectedEstadoCompraId = $request->input('estado_compra_id');
+
+        $selectedIdProyecto         = $request->input('id_proyecto');
+        $selectedItemPresupuestario = $request->input('item_presupuestario');
+
         // ------------------------------------------------------------------
-        // 1. Construcción de la query base
+        // 1. Construccion de la query base
         // ------------------------------------------------------------------
         $query = Pac::query()
             ->select([
@@ -76,26 +92,44 @@ class ReporteController extends Controller
             ->where('pacs.year', (string) $selectedYear);
 
         // ------------------------------------------------------------------
-        // 2. Aplicación de filtros
+        // 2. Aplicacion de filtros
         // ------------------------------------------------------------------
+        if (!$isAdmin) {
+            $query->where('pacs.departamento_id', $user->departamento_id);
+        }
+
+        if ($selectedIdProyecto) {
+            $query->where('pacs.id', $selectedIdProyecto);
+        }
+
         if ($selectedDepartamentoId) {
             $query->where('pacs.departamento_id', $selectedDepartamentoId);
+        }
+
+        if ($selectedItemPresupuestario) {
+            $query->where('pacs.codigo', 'ilike', "%{$selectedItemPresupuestario}%");
+        }
+
+        if ($selectedEstadoLicitacionId) {
+            $query->where('modalidads.estado_id', $selectedEstadoLicitacionId);
+        }
+
+        if ($selectedEstadoCompraId) {
+            $query->where('ordens.estado_id', $selectedEstadoCompraId);
         }
 
         if ($request->filled('buscar')) {
             $buscar = $request->input('buscar');
             $query->where(function ($q) use ($buscar) {
-                $q->whereRaw('CAST("pacs"."id" AS TEXT) ILIKE ?', ["%{$buscar}%"])
-                  ->orWhere('pacs.codigo', 'ilike', "%{$buscar}%")
+                $q->where('especies.detalle', 'ilike', "%{$buscar}%")
                   ->orWhere('modalidads.numero', 'ilike', "%{$buscar}%")
-                  ->orWhere('ordens.numero', 'ilike', "%{$buscar}%")
-                  ->orWhere('departamentos.detalle', 'ilike', "%{$buscar}%");
+                  ->orWhere('modalidads.modalidad', 'ilike', "%{$buscar}%")
+                  ->orWhere('ordens.numero', 'ilike', "%{$buscar}%");
             });
         }
 
         // ------------------------------------------------------------------
-        // 3. Exportar a Excel si se presionó el botón Excel
-        //    (debe ir ANTES de paginar)
+        // 3. Exportar a Excel si se presiono el boton Excel
         // ------------------------------------------------------------------
         if ($request->has('export')) {
             return Excel::download(
@@ -118,7 +152,13 @@ class ReporteController extends Controller
             'departamentos',
             'availableYears',
             'selectedYear',
+            'selectedIdProyecto',
             'selectedDepartamentoId',
+            'selectedItemPresupuestario',
+            'estadosLicitacion',
+            'selectedEstadoLicitacionId',
+            'estadosCompra',
+            'selectedEstadoCompraId',
         ));
     }
 }

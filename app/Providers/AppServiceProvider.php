@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
@@ -43,5 +46,15 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::policy(Project::class, ProjectPolicy::class);
+
+        // Rate limiting por RUT: max 5 intentos por minuto
+        RateLimiter::for('login-rut', function ($request) {
+            return Limit::perMinute(5)->by($request->input('rut_funcionario', $request->ip()));
+        });
+
+        // Directiva Blade para inyectar nonce CSP en scripts e inline styles
+        Blade::directive('cspNonce', function () {
+            return "<?php echo 'nonce=\"' . (app()->bound('csp-nonce') ? app('csp-nonce') : '') . '\"'; ?>";
+        });
     }
 }

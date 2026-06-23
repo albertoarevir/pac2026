@@ -1,10 +1,10 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     {{-- ================================================================
      ESTILOS PROPIOS DE LA VISTA
      ================================================================ --}}
-    <style>
+    <style @cspNonce>
         :root {
             --color-header-bg: #1a2744;
             --color-header-txt: #e8edf8;
@@ -262,7 +262,7 @@
         <div class="col-12">
             <h1 style="font-size:24px; font-weight:700; color:#1a2744; margin:0;">
                 <i class="bi bi-table me-2" style="color:var(--color-accent);"></i>
-                Reporte de Ejecución Presupuestaria
+                Reporte de Ejecución Plan Anual de Compras
             </h1>
             <p style="font-size:13px; color:#64748b; margin:.2rem 0 0;">
                 Visualización detallada por Proyecto, Licitación y Orden de Compra — Año {{ $selectedYear }}
@@ -281,9 +281,9 @@
                 @csrf
 
                 {{-- Año --}}
-                <div class="col-md-2 col-sm-6">
+                <div class="col-md-1 col-sm-6">
                     <label for="year"><i class="bi bi-calendar3 me-1"></i>Año</label>
-                    <select name="year" id="year" class="form-select form-select-sm">
+                    <select name="year" id="year" class="form-control form-control-sm">
                         @foreach ($availableYears as $year)
                             <option value="{{ $year }}"
                                 {{ (string) $year === (string) $selectedYear ? 'selected' : '' }}>
@@ -293,10 +293,17 @@
                     </select>
                 </div>
 
+                {{-- ID Proyecto --}}
+                <div class="col-md-1 col-sm-6">
+                    <label for="id_proyecto"><i class="bi bi-hash me-1"></i>ID Proyecto</label>
+                    <input type="number" name="id_proyecto" id="id_proyecto" class="form-control form-control-sm"
+                        placeholder="Ej: 42" value="{{ $selectedIdProyecto ?? '' }}" min="1">
+                </div>
+
                 {{-- Departamento --}}
-                <div class="col-md-3 col-sm-6">
+                <div class="col-md-2 col-sm-6">
                     <label for="departamento_id"><i class="bi bi-building me-1"></i>Departamento</label>
-                    <select name="departamento_id" id="departamento_id" class="form-select form-select-sm">
+                    <select name="departamento_id" id="departamento_id" class="form-control form-control-sm">
                         <option value="">— Todos —</option>
                         @foreach ($departamentos as $dep)
                             <option value="{{ $dep->id }}"
@@ -307,15 +314,53 @@
                     </select>
                 </div>
 
+                {{-- Ítem Presupuestario --}}
+                <div class="col-md-1 col-sm-6">
+                    <label for="item_presupuestario"><i class="bi bi-tag me-1"></i>Ítem Pres.</label>
+                    <input type="text" name="item_presupuestario" id="item_presupuestario"
+                        class="form-control form-control-sm"
+                        placeholder="Ej: 22.04"
+                        value="{{ $selectedItemPresupuestario ?? '' }}">
+                </div>
+
+                {{-- Estado Licitación --}}
+                <div class="col-md-2 col-sm-6">
+                    <label for="estado_licitacion_id"><i class="bi bi-file-earmark-text me-1"></i>Estado Licitación</label>
+                    <select name="estado_licitacion_id" id="estado_licitacion_id" class="form-control form-control-sm">
+                        <option value="">— Todos —</option>
+                        @foreach ($estadosLicitacion as $est)
+                            <option value="{{ $est->id }}"
+                                {{ (string) $est->id === (string) $selectedEstadoLicitacionId ? 'selected' : '' }}>
+                                {{ $est->detalle }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Estado Orden de Compra --}}
+                <div class="col-md-2 col-sm-6">
+                    <label for="estado_compra_id"><i class="bi bi-cart-check me-1"></i>Estado Orden Compra</label>
+                    <select name="estado_compra_id" id="estado_compra_id" class="form-control form-control-sm">
+                        <option value="">— Todos —</option>
+                        @foreach ($estadosCompra as $est)
+                            <option value="{{ $est->id }}"
+                                {{ (string) $est->id === (string) $selectedEstadoCompraId ? 'selected' : '' }}>
+                                {{ $est->detalle }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 {{-- Búsqueda libre --}}
-                <div class="col-md-4 col-sm-8">
+                <div class="col">
                     <label for="buscar"><i class="bi bi-search me-1"></i>Búsqueda libre</label>
                     <input type="text" name="buscar" id="buscar" class="form-control form-control-sm"
-                        placeholder="ID proyecto, código, N° licitación, N° orden…" value="{{ request('buscar') }}">
+                        placeholder="Especies, Orden de Compras"
+                        value="{{ request('buscar') }}">
                 </div>
 
                 {{-- Botones de Acción --}}
-                <div class="col-md-3 col-sm-4 d-flex gap-2 align-items-end">
+                <div class="col-auto d-flex gap-2 align-items-end flex-wrap">
                     <button type="submit" class="btn-filtrar">
                         <i class="bi bi-funnel-fill me-1"></i>Filtrar
                     </button>

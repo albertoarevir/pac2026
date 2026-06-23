@@ -29,7 +29,7 @@
                                 <th style="width: 2%;">Cantidad Ordenes de Compras</th>
                                 <th style="width: 5%"> Especie o Servicio</th>
                                 <th style="width: 15%;">Modalidad de compra</th>
-                                <th style="width: 4%;">Numero de Licitación</th>
+                                <th style="width: 4%;">Id Licitación</th>
                                 <th style="width: 5%;">Estado</th>
                                 {{-- <th style="width: 19%">Observación</th> --}}
                                 <th style="width: 2%;">Fecha ingreso creación registro</th>
@@ -252,7 +252,7 @@
                                                 </tbody>
                                             </table>
 
-                                            <script>
+                                            <script @cspNonce>
                                                 $(function() {
                                                     $("#example3-{{ $modalidad->id }}").DataTable({
                                                         "pageLength": 5,
@@ -321,7 +321,7 @@
     @endforeach
 @endforeach
 
-                    <script>
+                    <script @cspNonce>
                         function formatNumber(input) {
                             let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
                             if (!isNaN(value)) {
@@ -397,7 +397,7 @@
                         });
                     </script>
 
-                    <script>
+                    <script @cspNonce>
                         $('.formulario-eliminar').submit(function(e) {
                             e.preventDefault();
                             Swal.fire({

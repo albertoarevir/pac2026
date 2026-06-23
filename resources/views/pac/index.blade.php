@@ -88,17 +88,17 @@
                         <thead style="background-color: #206113">
                             <tr>
                                 <!-- <th style="width: 2%;">N° Orden</th>-->
-                                <th style="width: 5%; color: #fff;">Año-PAC</th>
+                                <th style="width: 5%; color: #fff;">Año</th>
                                 <th style="width: 8%;color: #fff;">Departamento responsable</th>
-                                <th style="width: 3%;color: #fff;">N° Id del Proyecto</th>
+                                <th style="width: 3%;color: #fff;">Id del Proyecto</th>
                                 <th style="width: 8%;color: #fff;">Cantidad Licitaciones</th>
                                 <th style="width: 6%;color: #fff;">Cantidad O/C</th>
-                                <th style="width: 6%;color: #fff;">Clasificador</th>
+                                <th style="width: 6%;color: #fff;">Subitulo Presupuestario</th>
                                 <th style="width: 6%;color: #fff;">Item Presupuestario</th>
-                                <th style="width: 20%;color: #fff;">Especie</th>
+                                <th style="width: 20%;color: #fff;">Especie/Servicio</th>
                                 <th style="width: 4%;color: #fff;">Cantidad</th>
                                 <th style="width: 9%;color: #fff;">Presupuesto Asignado Inicial</th>
-                                <th style="width: 9%;color: #fff;">Comprometido $$</th>
+                                <th style="width: 9%;color: #fff;">Presupuesto Devengado</th>
                                 <th style="width: 6%;color: #fff;">Porcentaje ejecución</th>
                                 {{-- <th style="width: 10%;color: #fff;">Item-Presupuestario</th> --}}
                                 {{--  <th style="width: 10%;color: #fff;">Unidad de Compra</th> --}}
@@ -824,7 +824,7 @@
                                                                     </tbody>
                                                                 </table>
 
-                                                                <script>
+                                                                <script @cspNonce>
                                                                     $(function() {
                                                                         $("#example3-{{ $pac->id }}-{{ $modalidad->id }}").DataTable({
                                                                             "pageLength": 5,
@@ -894,7 +894,7 @@
                     @endforeach
 
 
-                    <script>
+                    <script @cspNonce>
                         function formatNumber(input) {
                             let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
                             if (!isNaN(value)) {
@@ -1048,7 +1048,7 @@
                         });
                     </script>
 
-                    <script>
+                    <script @cspNonce>
                         $(document).ready(function() {
                             $('.formulario-eliminar').submit(function(e) {
                                 e.preventDefault();

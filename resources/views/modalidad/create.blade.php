@@ -43,7 +43,7 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="numero">Número identificador</label>
+                                    <label for="numero">Id Licitación</label>
                                     <input type="text" name="numero" id="numero" {{-- Mantiene el valor antiguo si hay error, o el valor de la base de datos si es edición --}}
                                         value="{{ old('numero', $modalidad->numero ?? '') }}" maxlength="15"
                                         {{-- Añade borde rojo automáticamente si hay un error de validación --}} class="form-control @error('numero') is-invalid @enderror"
@@ -106,7 +106,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <script @cspNonce>
         $(document).ready(function() {
             $('form').submit(function() {
                 $(this).find('button[type="submit"]').prop('disabled', true).text('Procesando...');
