@@ -24,12 +24,8 @@ class SecurityHeaders
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
         $response->headers->set('Server', 'webserver');
 
-        $isLogin   = $request->routeIs('login.custom', 'login.api');
-        $apiHost   = config('services.autentificatic.host', 'autentificaticapi.carabineros.cl');
-
-        $connectSrc = $isLogin
-            ? "'self' http://{$apiHost} https://{$apiHost}"
-            : "'self' https://{$apiHost}";
+        $apiHost    = config('services.autentificatic.host', 'autentificaticapi.carabineros.cl');
+        $connectSrc = "'self' http://{$apiHost} https://{$apiHost}";
 
         $response->headers->set('Content-Security-Policy',
             "default-src 'self'; " .

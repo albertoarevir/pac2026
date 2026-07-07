@@ -196,6 +196,18 @@
                                         <input type="hidden" name="rut_funcionario" id="rutHidden">
                                         <input type="hidden" name="accessToken" id="accessToken">
 
+                                        @if ($errors->any())
+                                        <div class="alert alert-danger mb-3" style="border-radius: 10px;">
+                                            {{ $errors->first('msg') ?? $errors->first() }}
+                                        </div>
+                                        @endif
+
+                                        @if (session('info'))
+                                        <div class="alert alert-warning mb-3" style="border-radius: 10px;">
+                                            {{ session('info') }}
+                                        </div>
+                                        @endif
+
                                         <button type="button" id="btnSesion" class="btn-login">
                                             Iniciar Sesión
                                         </button>
