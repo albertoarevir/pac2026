@@ -41,7 +41,7 @@
 
                             <div class="form-group">
                                 <label for="detalle">Detalle de Especie/Servicio</label>
-                                <input type="text" name="detalle" id="detalle" class="form-control @error('detalle') is-invalid @enderror" value="{{ old('detalle') }}" required>
+                                <input type="text" name="detalle" id="detalle" class="form-control @error('detalle') is-invalid @enderror" value="{{ old('detalle') }}" style="text-transform: uppercase" oninput="this.value = this.value.toUpperCase()" required>
                                 @error('detalle')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

@@ -100,4 +100,27 @@ class PresupuestoController extends Controller
         return redirect()->route('presupuesto.index')
                          ->with('mensaje', 'Registro eliminado correctamente.');
     }
+
+    public function checkDuplicate(Request $request)
+    {
+        $request->validate([
+            'departamento_id' => 'required|integer',
+            'codigo_id'       => 'required|string',
+            'year'            => 'required|integer',
+        ]);
+
+        $existe = Presupuesto::where('departamento_id', $request->departamento_id)
+            ->where('item', $request->codigo_id)
+            ->where('year', $request->year)
+            ->first();
+
+        if ($existe) {
+            return response()->json([
+                'existe' => true,
+                'monto'  => number_format($existe->monto, 0, ',', '.'),
+            ]);
+        }
+
+        return response()->json(['existe' => false]);
+    }
 }

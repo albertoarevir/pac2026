@@ -11,23 +11,23 @@ use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ReporteDashboardController;
 
-// ─── Página raíz ────────────────────────────────────────────────────────────
+// â”€â”€â”€ PÃ¡gina raÃ­z â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::get('/', function () {
     return redirect()->route('login.custom');
 });
 
-// ─── Autenticación ──────────────────────────────────────────────────────────
+// â”€â”€â”€ AutenticaciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::get('/', [ApiLoginController::class, 'showLoginForm'])->name('login.custom');
 Route::post('/login-api-process', [ApiLoginController::class, 'loginWithApi'])->name('login.api')->middleware(['throttle:5,1', 'throttle:login-rut']);
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
-// ─── Rutas de solo lectura de AJAX (lookups compartidos entre módulos) ──────
+// â”€â”€â”€ Rutas de solo lectura de AJAX (lookups compartidos entre mÃ³dulos) â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth'])->group(function () {
     Route::get('/get-especies', [\App\Http\Controllers\PacController::class, 'getEspecies'])->name('get-especies');
     Route::get('/get-codigos',  [App\Http\Controllers\PacController::class,  'getCodigos'])->name('get-codigos');
 });
 
-// ─── ADMINISTRADOR: gestión de usuarios del sistema ─────────────────────────
+// â”€â”€â”€ ADMINISTRADOR: gestiÃ³n de usuarios del sistema â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'role:ADMINISTRADOR'])->group(function () {
     Route::get('/admin',                          [App\Http\Controllers\AdminController::class,   'index'])->name('admin.index');
     Route::get('/admin/usuarios',                 [App\Http\Controllers\UsuarioController::class, 'index'])->name('admin.usuarios.index');
@@ -55,13 +55,13 @@ Route::middleware(['auth', 'permission:MENU BITACORA'])->group(function () {
     Route::get('/bitacora', [BitacoraController::class, 'index'])->name('bitacora.index');
 });
 
-// ─── AUTENTIFICATIC ─────────────────────────────────────────────────────────
+// â”€â”€â”€ AUTENTIFICATIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU AUTENTIFICATIC'])->group(function () {
     Route::get('/Autenti/registerUser',  [App\Http\Controllers\Autenti\AutentiController::class, 'index'])->name('registerUser.form');
     Route::post('/Autenti/registerUser', [App\Http\Controllers\Autenti\AutentiController::class, 'store'])->name('registerUser.store');
 });
 
-// ─── PLAN ANUAL DE COMPRAS ───────────────────────────────────────────────────
+// â”€â”€â”€ PLAN ANUAL DE COMPRAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU PLAN ANUAL DE COMPRAS'])->group(function () {
     Route::get('/pac', [App\Http\Controllers\PacController::class, 'index'])->name('pac.index');
 });
@@ -80,7 +80,7 @@ Route::middleware(['auth', 'permission:ELIMINAR PROYECTO'])->group(function () {
     Route::delete('/pac/{id}', [\App\Http\Controllers\PacController::class, 'destroy'])->name('destroy');
 });
 
-// ─── LICITACIONES ───────────────────────────────────────────────────────────
+// â”€â”€â”€ LICITACIONES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU LICITACIONES'])->group(function () {
     Route::get('/modalidad', [\App\Http\Controllers\ModalidadController::class, 'index'])->name('modalidad.index');
 });
@@ -99,7 +99,7 @@ Route::middleware(['auth', 'permission:ELIMINAR LICITACION'])->group(function ()
     Route::delete('/modalidad/{id}', [\App\Http\Controllers\ModalidadController::class, 'destroy'])->name('modalidad.destroy');
 });
 
-// ─── ORDENES DE COMPRA ───────────────────────────────────────────────────────
+// â”€â”€â”€ ORDENES DE COMPRA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU ORDENES DE COMPRA'])->group(function () {
     Route::get('/ordenes', [\App\Http\Controllers\OrdenController::class, 'index'])->name('ordenes.index');
 });
@@ -118,24 +118,25 @@ Route::middleware(['auth', 'permission:ELIMINAR LICITACION'])->group(function ()
     Route::delete('/ordenes/{id}', [\App\Http\Controllers\OrdenController::class, 'destroy'])->name('ordenes.destroy');
 });
 
-// ─── PRESUPUESTO ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ PRESUPUESTO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU PRESUPUESTO'])->group(function () {
+    Route::get('/presupuesto/check-duplicate', [\App\Http\Controllers\PresupuestoController::class, 'checkDuplicate'])->name('presupuesto.check-duplicate');
     Route::resource('/presupuesto', \App\Http\Controllers\PresupuestoController::class)->names('presupuesto');
 });
 
-// ─── DASHBOARD ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU DASHBOARD'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 });
 
-// ─── REPORTES ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ REPORTES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU REPORTES'])->group(function () {
     Route::get('/reporte',           [ReporteController::class,          'index'])->name('reporte.index');
     Route::get('/reporte/dashboard', [ReporteDashboardController::class, 'index'])->name('reporte.dashboard');
 });
 
 
-// ─── CONFIGURACIÓN ──────────────────────────────────────────────────────────
+// â”€â”€â”€ CONFIGURACIÃ“N â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'permission:MENU CONFIGURACION'])->group(function () {
     Route::resource('/grados',              \App\Http\Controllers\GradoController::class);
     Route::resource('/departamentos',       \App\Http\Controllers\DepartamentoController::class);
@@ -162,7 +163,7 @@ Route::middleware(['auth', 'permission:MENU CONFIGURACION'])->group(function () 
     Route::delete('/estadocompras/{id}',             [\App\Http\Controllers\EstadoCompraController::class, 'destroy'])->name('estadocompras.destroy');
 });
 
-// ─── FUNCIONARIOS (sin menú explícito — solo autenticación) ─────────────────
+// â”€â”€â”€ FUNCIONARIOS (sin menÃº explÃ­cito â€” solo autenticaciÃ³n) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'role:ADMINISTRADOR'])->group(function () {
     Route::resource('/funcionarios', \App\Http\Controllers\FuncionarioController::class)->names('funcionarios');
     Route::post('/funcionarios',     [App\Http\Controllers\FuncionarioController::class, 'store'])->name('funcionarios.store');

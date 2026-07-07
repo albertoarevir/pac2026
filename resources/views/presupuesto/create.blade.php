@@ -37,7 +37,7 @@
                                     <div class="form-group">
                                         <label for="">Departamento</label>
                                         <select name="departamento" id="departamento" class="form-control"
-                                            @error('departamento') is-invalid @enderror required> {{-- Añade la clase is-invalid para estilos de error de Bootstrap --}}
+                                            @error('departamento') is-invalid @enderror required>
                                             <option value="">-- Ingrese Departamento --</option>
                                             @foreach ($departamentos as $departamento)
                                                 <option value="{{ $departamento->id }}"
@@ -48,7 +48,6 @@
                                         </select>
                                     </div>
                                 </div>
-
 
                                 <script @cspNonce>
                                     $(document).ready(function() {
@@ -61,9 +60,7 @@
                                                     departamento: departamentoId
                                                 },
                                                 success: function(data) {
-                                                    console.log(
-                                                        data
-                                                    ); // Verifica que los datos estén siendo devueltos correctamente
+                                                    console.log(data);
                                                     $('#especie').empty();
                                                     $('#especie').append(
                                                         '<option value="">Seleccione una especie o servicio</option>');
@@ -76,11 +73,12 @@
                                         });
                                     });
                                 </script>
+
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="">Clasificador Presupuestario</label>
                                         <select name="clasificador" id="clasificador" class="form-control"
-                                            @error('clasificador') is-invalid @enderror" required>
+                                            @error('clasificador') is-invalid @enderror required>
                                             <option value="">-- Seleccione un clasificador --</option>
                                             @foreach ($clasificadors as $clasificador)
                                                 <option value="{{ $clasificador->codigo_id }}">
@@ -93,7 +91,6 @@
                                     </div>
                                 </div>
                             </div>
-
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -122,7 +119,6 @@
                                 </div>
                             </div>
 
-
                             <script @cspNonce>
                                 document.getElementById('clasificador').addEventListener('change', cargarCodigos);
 
@@ -134,7 +130,7 @@
                                             .then(data => {
                                                 let codigoSelect = document.getElementById('codigo');
                                                 codigoSelect.innerHTML = '<option value="">Seleccione un código</option>';
-                                                data.forEach(codigo => {                                                    
+                                                data.forEach(codigo => {
                                                     codigoSelect.innerHTML +=
                                                         `<option value="${codigo.codigopre}">${codigo.codigopre} - ${codigo.detalle}</option>`;
                                                 });
@@ -145,6 +141,40 @@
                                             '<option value="">Selecciona un clasificador primero</option>';
                                     }
                                 }
+
+                                document.getElementById('codigo').addEventListener('change', verificarDuplicado);
+                                document.getElementById('departamento').addEventListener('change', function() {
+                                    if (document.getElementById('codigo').value) verificarDuplicado();
+                                });
+                                document.getElementById('year').addEventListener('change', function() {
+                                    if (document.getElementById('codigo').value) verificarDuplicado();
+                                });
+
+                                function verificarDuplicado() {
+                                    const departamentoId = document.getElementById('departamento').value;
+                                    const codigoId      = document.getElementById('codigo').value;
+                                    const year          = document.getElementById('year').value;
+
+                                    if (!departamentoId || !codigoId || !year) return;
+
+                                    fetch(`{{ route('presupuesto.check-duplicate') }}?departamento_id=${departamentoId}&codigo_id=${encodeURIComponent(codigoId)}&year=${year}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.existe) {
+                                                const codigoTexto = document.getElementById('codigo').selectedOptions[0].text;
+                                                document.getElementById('modalCodigoTexto').textContent = codigoTexto;
+                                                document.getElementById('modalMonto').textContent = '$ ' + data.monto;
+                                                $('#modalDuplicado').modal('show');
+                                            }
+                                        })
+                                        .catch(error => console.error('Error al verificar duplicado:', error));
+                                }
+
+                                $(document).ready(function() {
+                                    $('#modalDuplicado').on('hidden.bs.modal', function() {
+                                        window.location.href = '{{ route('presupuesto.index') }}';
+                                    });
+                                });
                             </script>
 
                             <div class="row">
@@ -155,9 +185,7 @@
                                         <textarea name="observacion" class="form-control" rows="8"></textarea>
                                     </div>
                                 </div>
-
                             </div>
-
 
                             <hr>
                             <div class="row">
@@ -168,12 +196,12 @@
                                         registro</button>
                                 </div>
                             </div>
+
                             <script @cspNonce>
                                 function formatNumber(input) {
-                                    let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
+                                    let value = input.value.replace(/\./g, '');
                                     if (!isNaN(value)) {
-                                        // Formatea el número con puntos como separadores de miles
-                                        input.value = Number(value).toLocaleString('es'); 
+                                        input.value = Number(value).toLocaleString('es');
                                     } else {
                                         input.value = '';
                                     }
@@ -181,15 +209,37 @@
 
                                 function removeCommas() {
                                     let input = document.getElementById('presupuesto');
-                                    input.value = input.value.replace(/\./g, ''); // Elimina los puntos en lugar de las comas
+                                    input.value = input.value.replace(/\./g, '');
                                 }
                             </script>
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
-    
+
+    <!-- Modal: ítem con presupuesto ya asignado -->
+    <div class="modal fade" id="modalDuplicado" tabindex="-1" role="dialog" aria-labelledby="modalDuplicadoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-warning">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalDuplicadoLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Presupuesto ya asignado
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>El ítem <strong id="modalCodigoTexto"></strong> ya tiene presupuesto asignado a este departamento para el año seleccionado.</p>
+                    <p class="mb-0">Monto asignado: <strong id="modalMonto" class="text-danger" style="font-size:1.1em;"></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Entendido, volver al listado</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
