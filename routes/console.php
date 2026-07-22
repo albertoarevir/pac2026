@@ -19,4 +19,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('backup:run')->dailyAt('13:00');
+Schedule::command('backup:run --only-db')->dailyAt('13:00');
+Schedule::command('backup:clean')->daily();
