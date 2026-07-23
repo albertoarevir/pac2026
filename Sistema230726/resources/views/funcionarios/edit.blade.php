@@ -1,0 +1,126 @@
+@extends('layouts.admin')
+
+@section('content')
+    <div class="row">
+        <h2 style="margin-left: 30px">Modificar Usuario: {{ $funcionarios->Nombres }}</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-8" style="margin-left: 30px">
+            <div class="card card-outline card-success">
+
+                <div class="card-body">
+                    <form action="{{ url('/funcionarios/'. $funcionarios->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="div-col 12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Rut</label>
+                                        <input type="text" value="{{ $funcionarios->Rut }}" name="Rut"
+                                            class="form-control" maxlength="9"
+                                            required oninput="this.value = this.value.toUpperCase()">
+                                        @error('Rut')
+                                            <small style="color: red">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Código</label>
+                                        <input type="text" value="{{ $funcionarios->Codigo }}" name="Codigo"
+                                            class="form-control"
+                                            required oninput="this.value = this.value.toUpperCase()">
+                                        @error('Codigo')
+                                            <small style="color: red">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Grado</label>
+                                        <select name="Grado" id="Grado" class="form-control @error('Grado') is-invalid @enderror" required>
+                                            <option value="">-- Ingrese el grado correspondiente --</option>
+                                            @foreach ($grados as $grado)
+                                                <option value="{{ $grado->detalle }}" {{ $grado->detalle == $funcionarios->Grado ? 'selected' : '' }}>
+                                                    {{ $grado->detalle }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">Nombres del usuario</label>
+                                        <input type="text" value="{{ $funcionarios->Nombres }}" name="Nombres"
+                                            class="form-control"
+                                            required oninput="this.value = this.value.toUpperCase()">
+                                        @error('Nombres')
+                                            <small style="color: red">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">Apellidos</label>
+                                        <input type="text" value="{{ $funcionarios->Apellidos }}" name="Apellidos"
+                                            class="form-control"
+                                            required oninput="this.value = this.value.toUpperCase()">
+                                        @error('Apellidos')
+                                            <small style="color: red">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Departamento</label>
+                                        <select name="Dotacion" id="Dotacion" class="form-control @error('Dotacion') is-invalid @enderror" required>
+                                            <option value="">-- Ingrese Departamento --</option>
+                                            @foreach ($departamentos as $departamento)
+                                                <option value="{{ $departamento->detalle }}" {{ $funcionarios->Dotacion == $departamento->detalle ? 'selected' : '' }}>
+                                                    {{ $departamento->detalle }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                               
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">Email</label>
+                                        <input type="Email" value="{{ $funcionarios->Email }}" name="Email"
+                                            class="form-control"
+                                            required oninput="this.value = this.value.toLowerCase()" onblur="this.value = this.value.toLowerCase()">
+                                            @error('Email')
+                                            <small style="color: red">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="{{ url('funcionarios') }}" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-success"><i class="bi bi-floppy2"></i> Actualizar
+                                    usuario</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
