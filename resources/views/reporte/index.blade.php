@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('content')
     {{-- ================================================================
@@ -79,7 +79,7 @@
         }
 
         .btn-limpiar:hover {
-            background: #e2e8f0;
+            background: #b2eb8d;
         }
 
         /* ---- Tabla ---- */
@@ -132,7 +132,7 @@
         }
 
         .tabla-reporte tbody tr:hover {
-            background: #eff4ff;
+            background: #fef9c3;
         }
 
         .tabla-reporte tbody td {
@@ -252,6 +252,12 @@
         /* Responsive scroll */
         .scroll-x {
             overflow-x: auto;
+        }
+
+        /* Evita que el calculo JS de AdminLTE (min-height/height dinamico) deje al content-wrapper mas bajo que la tabla real, tapando el footer */
+        .content-wrapper {
+            height: auto !important;
+            min-height: auto !important;
         }
     </style>
 

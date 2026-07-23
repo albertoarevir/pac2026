@@ -8,12 +8,12 @@
     <br>
     <div class="row">
         <div class="col-md-9" style="margin-left: 20px">
-            <div class="card card-outline card-success"> {{-- Cambié a verde para diferenciar que es edición --}}
+            <div class="card card-outline card-success">
                 <div class="card-body">
-                    <form action="{{ route('presupuesto.update', $presupuesto->id) }}" method="post" onsubmit="removeCommas()">
+                    <form id="formPresupuesto" action="{{ route('presupuesto.update', $presupuesto->id) }}" method="post">
                         @csrf
-                        @method('PUT') {{-- Imprescindible para el update --}}
-                        
+                        @method('PUT')
+
                         <div class="col-md-12">
                             <div class="row">
                                 {{-- Año --}}
@@ -52,7 +52,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="clasificador">Clasificador Presupuestario</label>
-                                        <select name="clasificador" id="clasificador" class="form-control" onchange="cargarCodigos()" required>
+                                        <select name="clasificador" id="clasificador" class="form-control" required>
                                             <option value="">-- Seleccione --</option>
                                             @foreach ($clasificadors as $cl)
                                                 <option value="{{ $cl->codigo_id }}" {{ (old('clasificador', $presupuesto->clasificador) == $cl->codigo_id) ? 'selected' : '' }}>
@@ -70,7 +70,6 @@
                                     <div class="form-group">
                                         <label for="codigo">Codigo - Descripción</label>
                                         <select name="codigo_id" id="codigo" class="form-control" required>
-                                            {{-- Se llenará mediante JS al cargar --}}
                                             <option value="{{ $presupuesto->item }}">{{ $presupuesto->item }}</option>
                                         </select>
                                     </div>
@@ -80,9 +79,16 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="presupuesto">Presupuesto $$</label>
-                                        <input type="text" id="presupuesto" class="form-control" name="presupuesto"
-                                            value="{{ old('presupuesto', number_format($presupuesto->monto, 0, ',', '.')) }}" 
-                                            maxlength="15" oninput="formatNumber(this)" required>
+                                        <input type="text" id="presupuesto"
+                                            class="form-control @error('presupuesto') is-invalid @enderror"
+                                            name="presupuesto"
+                                            value="{{ old('presupuesto') ? number_format((int) str_replace('.', '', old('presupuesto')), 0, ',', '.') : number_format($presupuesto->monto, 0, ',', '.') }}"
+                                            maxlength="15"
+                                            placeholder="Ej: 1.500.000"
+                                            required>
+                                        @error('presupuesto')
+                                            <small style="color: red">{{ $message }}</small>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -111,43 +117,56 @@
     </div>
 
     <script @cspNonce>
-        // Al cargar la página, si hay un clasificador seleccionado, cargar sus códigos
-        document.addEventListener("DOMContentLoaded", function() {
-            if (document.getElementById('clasificador').value) {
-                cargarCodigos("{{ $presupuesto->item }}");
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var currentItem = @json($presupuesto->item);
+
+        // -- Presupuesto: solo numeros con puntos de miles (formato chileno) --
+        var presupuestoInput = document.getElementById('presupuesto');
+
+        function formatMiles(input) {
+            var raw = input.value.replace(/[^0-9]/g, '');
+            if (raw === '') { input.value = ''; return; }
+            input.value = parseInt(raw, 10).toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        presupuestoInput.addEventListener('input', function () { formatMiles(this); });
+
+        // -- Quitar puntos antes de enviar --
+        document.getElementById('formPresupuesto').addEventListener('submit', function () {
+            presupuestoInput.value = presupuestoInput.value.replace(/\./g, '');
         });
 
-        function cargarCodigos(selectedItem = null) {
-            let clasificadorId = document.getElementById('clasificador').value;
-            let codigoSelect = document.getElementById('codigo');
+        // -- Clasificador -> Codigo --
+        function cargarCodigos(selectedItem) {
+            var clasificadorId = document.getElementById('clasificador').value;
+            var codigoSelect   = document.getElementById('codigo');
 
             if (clasificadorId) {
-                fetch(`{{ route('get-codigos') }}?clasificador=${clasificadorId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        codigoSelect.innerHTML = '<option value="">Seleccione un código</option>';
-                        data.forEach(codigo => {
-                            let selected = (selectedItem == codigo.codigopre) ? 'selected' : '';
-                            codigoSelect.innerHTML += `<option value="${codigo.codigopre}" ${selected}>${codigo.codigopre} - ${codigo.detalle}</option>`;
+                fetch('{{ route("get-codigos") }}?clasificador=' + clasificadorId)
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        codigoSelect.innerHTML = '<option value="">Seleccione un codigo</option>';
+                        data.forEach(function (codigo) {
+                            var sel = (selectedItem && String(codigo.codigopre) === String(selectedItem)) ? ' selected' : '';
+                            codigoSelect.innerHTML += '<option value="' + codigo.codigopre + '"' + sel + '>' +
+                                codigo.codigopre + ' - ' + codigo.detalle + '</option>';
                         });
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(function (e) { console.error('Error al cargar codigos:', e); });
             }
         }
 
-        function formatNumber(input) {
-            let value = input.value.replace(/\./g, '');
-            if (!isNaN(value) && value !== '') {
-                input.value = Number(value).toLocaleString('es');
-            } else {
-                input.value = '';
-            }
+        document.getElementById('clasificador').addEventListener('change', function () {
+            cargarCodigos(null);
+        });
+
+        // -- Cargar codigos al inicio con el item actual preseleccionado --
+        if (document.getElementById('clasificador').value) {
+            cargarCodigos(currentItem);
         }
 
-        function removeCommas() {
-            let input = document.getElementById('presupuesto');
-            input.value = input.value.replace(/\./g, '');
-        }
+    });
     </script>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Departamento;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 
 class DepartamentoController extends Controller
 {
@@ -34,14 +35,14 @@ class DepartamentoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'detalle' => 'required',  
+            'detalle' => 'required',
         //
         ]);
         $departamento = new Departamento();
-        
+
         $departamento->detalle = $request->detalle;
-       
-        
+
+
         $departamento->save();
         return redirect()->route('departamentos.index')->with('mensaje', 'Se registro el Departamento de la manera correcta');
     }
@@ -60,7 +61,7 @@ class DepartamentoController extends Controller
     public function edit(Departamento $departamentos, $id)
     {
         $departamentos= Departamento::findOrFail($id);
-        return view('departamentos.edit', ['departamentos'=>$departamentos]); 
+        return view('departamentos.edit', ['departamentos'=>$departamentos]);
         //
     }
 
@@ -70,13 +71,13 @@ class DepartamentoController extends Controller
     public function update(Request $request, Departamento $departamentos, $id)
     {
         $request->validate([
-            'detalle' => 'required',           
+            'detalle' => 'required',
         ]);
-    
-        $departamentos = Departamento::findOrFail($id);     
+
+        $departamentos = Departamento::findOrFail($id);
         $departamentos->detalle = $request->detalle;
         $departamentos->save();
-    
+
         return redirect()->route('departamentos.index')->with('mensaje', 'Se actualizó el registro de la manera correcta');
         //
     }
@@ -86,8 +87,14 @@ class DepartamentoController extends Controller
      */
     public function destroy(Departamento $departamentos, $id)
     {
-        Departamento::destroy($id);
-        return redirect()->route('departamentos.index')->with('mensaje', 'Se eliminó el registro del control de Departamento');
-        //
+        try {
+            Departamento::destroy($id);
+        } catch (QueryException $e) {
+            return redirect()->route('departamentos.index')
+                ->with('error', 'No se puede eliminar el Departamento porque tiene usuarios o especies/servicios asociados.');
+        }
+
+        return redirect()->route('departamentos.index')
+            ->with('mensaje', 'Se eliminó el registro del control de Departamento');
     }
 }

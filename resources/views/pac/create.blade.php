@@ -8,16 +8,15 @@
     <div class="row">
         <div class="col-md-11" style="margin-left: 20px">
             <div class="card card-outline card-primary">
-
                 <div class="card-body">
-                    <form action="{{ url('/pac') }}" method="post" onsubmit="removeCommas()">
+                    <form id="formPac" action="{{ url('/pac') }}" method="post">
                         @csrf
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="year">Año:</label>
-                                        <select class="form-control" name = "year" id="year"
+                                        <select class="form-control" name="year" id="year"
                                             @error('year') is-invalid @enderror" required>
                                             <option value="">Seleccione un año</option>
                                             @php
@@ -38,7 +37,7 @@
                                     <div class="form-group">
                                         <label for="">Departamento</label>
                                         <select name="departamento" id="departamento" class="form-control"
-                                            @error('departamento') is-invalid @enderror required> {{-- Añade la clase is-invalid para estilos de error de Bootstrap --}}
+                                            @error('departamento') is-invalid @enderror required>
                                             <option value="">-- Ingrese Departamento --</option>
                                             @foreach ($departamentos as $departamento)
                                                 <option value="{{ $departamento->id }}"
@@ -55,7 +54,6 @@
                                         <label for="">Especie o servicio</label>
                                         <select name="especie" id="especie"
                                             class="form-control @error('especie') is-invalid @enderror" required>
-                                            {{-- Añade la clase is-invalid para estilos de error de Bootstrap --}}
                                             <option value="">-- Ingrese la especie correspondiente --</option>
                                         </select>
                                         @error('especie')
@@ -63,37 +61,9 @@
                                         @enderror
                                     </div>
                                 </div>
-
-                                <script @cspNonce>
-                                    $(document).ready(function() {
-                                        $('#departamento').on('change', function() {
-                                            var departamentoId = $(this).val();
-                                            $.ajax({
-                                                type: 'GET',
-                                                url: '{{ route('get-especies') }}',
-                                                data: {
-                                                    departamento: departamentoId
-                                                },
-                                                success: function(data) {
-                                                    console.log(
-                                                        data
-                                                    ); // Verifica que los datos estén siendo devueltos correctamente
-                                                    $('#especie').empty();
-                                                    $('#especie').append(
-                                                        '<option value="">Seleccione una especie o servicio</option>');
-                                                    $.each(data, function(index, value) {
-                                                        $('#especie').append('<option value="' + value.id + '">' +
-                                                            value.detalle + '</option>');
-                                                    });
-                                                }
-                                            });
-                                        });
-                                    });
-                                </script>
                             </div>
+
                             <div class="row">
-
-
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">Subtitulo Presupuestario</label>
@@ -101,11 +71,13 @@
                                             @error('clasificador') is-invalid @enderror" required>
                                             <option value="">-- Seleccione un clasificador --</option>
                                             @foreach ($clasificadors as $clasificador)
-                                                <option value="{{ $clasificador->codigo_id }}">
-                                                    {{ $clasificador->codigo_id }} - {{ $clasificador->detalle }}</option>
+                                                <option value="{{ $clasificador->codigo_id }}"
+                                                    {{ old('clasificador') == $clasificador->codigo_id ? 'selected' : '' }}>
+                                                    {{ $clasificador->codigo_id }} - {{ $clasificador->detalle }}
+                                                </option>
                                             @endforeach
                                         </select>
-                                        @error('especie')
+                                        @error('clasificador')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -118,7 +90,7 @@
                                             @error('codigo_id') is-invalid @enderror required>
                                             <option value="">Selecciona un clasificador primero</option>
                                         </select>
-                                        @error('codigo')
+                                        @error('codigo_id')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -126,34 +98,11 @@
                             </div>
 
                             <div class="row">
-
-                                {{--
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="">Unidad de Compra</label>
-                                        <select name="unidadcompra" id="unidadcompra" class="form-control @error('unidadcompra') is-invalid @enderror" required> {{-- Añade la clase is-invalid para estilos de error de Bootstrap --}}
-                                {{-- }}
-                                            <option value="">-- Seleccione Unidad --</option>
-                                          
-                                            @foreach ($unidadcompras as $unidad)
-                                                <option value="{{ $unidad->detalle }}" {{ old('unidad') == $unidad->detalle ? 'selected' : '' }}>
-                                                    {{ $unidad->detalle }}
-                                                </option>
-                                            @endforeach
-                                        </select>                                       
-                                        @error('unidad')
-                                        <small style="color: red">{{$message}}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                                 --}}
-
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Cantidad/Litros/Kilos</label>
                                         <input type="text" id="cantidad" class="form-control" name="cantidad"
-                                            value="{{ old('cantidad') }}" maxlength="7" {{-- oninput="formatNumber(this)" --}}
-                                            oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
+                                            value="{{ old('cantidad') }}" maxlength="7" required>
                                         @error('cantidad')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
@@ -163,9 +112,13 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Asignación Inicial</label>
-                                        <input type="text" id="presupuesto" class="form-control" name="presupuesto"
-                                            value="{{ old('presupuesto') }}" maxlength="15" oninput="formatNumber(this)"
-                                            @error('presupuesto') is-invalid @enderror required>
+                                        <input type="text" id="presupuesto"
+                                            class="form-control @error('presupuesto') is-invalid @enderror"
+                                            name="presupuesto"
+                                            value="{{ old('presupuesto') ? number_format((int) str_replace('.', '', old('presupuesto')), 0, ',', '.') : '' }}"
+                                            maxlength="15"
+                                            placeholder="Ej: 1.500.000"
+                                            required>
                                         @error('presupuesto')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
@@ -178,7 +131,6 @@
                                         <select name="fuente_financiamiento" id="fuente_financiamiento" class="form-control"
                                             @error('fuente_financiamiento') is-invalid @enderror required>
                                             <option value="">-- Ingrese Fuente de Financiamiento --</option>
-                                            {{-- Usa la variable $fuente_financiamiento --}}
                                             @foreach ($fuentes as $fuente)
                                                 <option value="{{ $fuente->id }}"
                                                     {{ old('fuente_financiamiento') == $fuente->id ? 'selected' : '' }}>
@@ -193,12 +145,12 @@
                                         @enderror
                                     </div>
                                 </div>
+
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Estado del proyecto</label>
                                         <select name="estado_id" id="estado_id"
                                             class="form-control @error('estado_id') is-invalid @enderror" required>
-                                            {{-- Añade la clase is-invalid para estilos de error de Bootstrap --}}
                                             <option value="">-- Ingrese el estado actual --</option>
                                             @foreach ($estados as $estado)
                                                 <option value="{{ $estado->id }}"
@@ -207,70 +159,34 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('estado')
+                                        @error('estado_id')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
                                     </div>
                                 </div>
-
-
-
-
                             </div>
-
-
-
-                            <script @cspNonce>
-                                document.getElementById('clasificador').addEventListener('change', cargarCodigos);
-
-                                function cargarCodigos() {
-                                    let clasificadorId = document.getElementById('clasificador').value;
-                                    if (clasificadorId) {
-                                        fetch(`{{ route('get-codigos') }}?clasificador=${clasificadorId}`)
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                let codigoSelect = document.getElementById('codigo');
-                                                codigoSelect.innerHTML = '<option value="">Seleccione un código</option>';
-                                                data.forEach(codigo => {
-                                                    // codigoSelect.innerHTML += `<option value="${codigo.id}">${codigo.codigopre} - ${codigo.detalle}</option>`;
-                                                    // codigoSelect.innerHTML += `<option value="<span class="math-inline">\{codigo\.id\}"\</span>{codigo.codigopre} - ${codigo.detalle}</option>`;
-                                                    codigoSelect.innerHTML +=
-                                                        `<option value="${codigo.codigopre}">${codigo.codigopre} - ${codigo.detalle}</option>`;
-                                                });
-                                            })
-                                            .catch(error => console.error('Error al cargar los códigos:', error));
-                                    } else {
-                                        document.getElementById('codigo').innerHTML =
-                                            '<option value="">Selecciona un clasificador primero</option>';
-                                    }
-                                }
-                            </script>
 
                             <div class="row">
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label for="observacion">Observación (Registrar información para clarificar el
+                                        <label for="observacion">Observacion (Registrar informacion para clarificar el
                                             estado del registro)</label>
-                                        <textarea name="observacion" class="form-control" rows="8"></textarea>
+                                        <textarea name="observacion" class="form-control" rows="8">{{ old('observacion') }}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="estado_modificacion">Ingreso inicial Pac y/o Modificación</label>
-                                        {{-- Corrige el atributo 'name' y 'id' --}}
+                                        <label for="estado_modificacion">Ingreso inicial Pac y/o Modificacion</label>
                                         <select name="estado_modificacion" id="estado_modificacion" class="form-control"
                                             @error('estado_modificacion') is-invalid @enderror required>
-                                            <option value="">-- Ingrese Estado de Modificación --</option>
-                                            {{-- Itera sobre la variable correcta y usa el alias correcto --}}
+                                            <option value="">-- Ingrese Estado de Modificacion --</option>
                                             @foreach ($estados_modificacion as $estado_modificacion)
-                                                <option value="{{ $estado_modificacion->id }}" {{-- Corrige la validación para `old()` --}}
+                                                <option value="{{ $estado_modificacion->id }}"
                                                     {{ old('estado_modificacion') == $estado_modificacion->id ? 'selected' : '' }}>
-                                                    {{-- Muestra el valor de la columna 'detalle' --}}
                                                     {{ $estado_modificacion->detalle }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        {{-- Muestra el mensaje de error para 'estado_modificacion' --}}
                                         @error('estado_modificacion')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -278,9 +194,6 @@
                                         @enderror
                                     </div>
                                 </div>
-
-                               
-
                             </div>
                         </div>
 
@@ -293,25 +206,96 @@
                                     registro</button>
                             </div>
                         </div>
-                        <script @cspNonce>
-                            function formatNumber(input) {
-                                let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
-                                if (!isNaN(value)) {
-                                    // Formatea el número con puntos como separadores de miles
-                                    input.value = Number(value).toLocaleString('es'); // Alemán usa punto como separador
-                                } else {
-                                    input.value = '';
-                                }
-                            }
-
-                            function removeCommas() {
-                                let input = document.getElementById('presupuesto');
-                                input.value = input.value.replace(/\./g, ''); // Elimina los puntos en lugar de las comas
-                            }
-                        </script>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <script @cspNonce>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var oldDepartamento = @json(old('departamento', ''));
+        var oldEspecie      = @json(old('especie', ''));
+        var oldClasificador = @json(old('clasificador', ''));
+        var oldCodigo       = @json(old('codigo_id', ''));
+
+        // ── Asignacion Inicial: solo numeros con puntos de miles (formato chileno) ──
+        var presupuestoInput = document.getElementById('presupuesto');
+
+        function formatMiles(input) {
+            var raw = input.value.replace(/[^0-9]/g, '');
+            if (raw === '') { input.value = ''; return; }
+            input.value = parseInt(raw, 10).toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        presupuestoInput.addEventListener('input', function () { formatMiles(this); });
+
+        // ── Cantidad: solo digitos ──
+        document.getElementById('cantidad').addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // ── Quitar puntos de miles antes de enviar para que el servidor reciba numero limpio ──
+        document.getElementById('formPac').addEventListener('submit', function () {
+            presupuestoInput.value = presupuestoInput.value.replace(/\./g, '');
+        });
+
+        // ── Departamento -> Especie (AJAX) ──
+        $('#departamento').on('change', function () {
+            var departamentoId = $(this).val();
+            $.ajax({
+                type: 'GET',
+                url: '{{ route("get-especies") }}',
+                data: { departamento: departamentoId },
+                success: function (data) {
+                    $('#especie').empty();
+                    $('#especie').append('<option value="">Seleccione una especie o servicio</option>');
+                    $.each(data, function (index, value) {
+                        var sel = (oldEspecie !== '' && String(value.id) === String(oldEspecie))
+                            ? ' selected' : '';
+                        $('#especie').append(
+                            '<option value="' + value.id + '"' + sel + '>' + value.detalle + '</option>'
+                        );
+                    });
+                }
+            });
+        });
+
+        // ── Clasificador -> Item Presupuestario ──
+        function cargarCodigos() {
+            var clasificadorId = document.getElementById('clasificador').value;
+            if (clasificadorId) {
+                fetch('{{ route("get-codigos") }}?clasificador=' + clasificadorId)
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        var sel = document.getElementById('codigo');
+                        sel.innerHTML = '<option value="">Seleccione un codigo</option>';
+                        data.forEach(function (codigo) {
+                            var selected = (oldCodigo !== '' && String(codigo.codigopre) === String(oldCodigo))
+                                ? ' selected' : '';
+                            sel.innerHTML += '<option value="' + codigo.codigopre + '"' + selected + '>' +
+                                codigo.codigopre + ' - ' + codigo.detalle + '</option>';
+                        });
+                    })
+                    .catch(function (e) { console.error('Error al cargar codigos:', e); });
+            } else {
+                document.getElementById('codigo').innerHTML =
+                    '<option value="">Selecciona un clasificador primero</option>';
+            }
+        }
+
+        document.getElementById('clasificador').addEventListener('change', cargarCodigos);
+
+        // ── Restaurar selects dinamicos si la pagina vuelve con errores de validacion ──
+        if (oldDepartamento !== '') {
+            $('#departamento').trigger('change');
+        }
+        if (oldClasificador !== '') {
+            cargarCodigos();
+        }
+
+    });
+    </script>
 @endsection

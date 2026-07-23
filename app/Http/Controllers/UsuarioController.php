@@ -96,6 +96,32 @@ class UsuarioController extends Controller
             ->with('icono', 'success');
     }
 
+    public function toggleHabilitado(Request $request, $id)
+    {
+        $usuario = User::findOrFail($id);
+        $this->verificarDepartamento($usuario);
+
+        $request->validate([
+            'habilitado' => 'required|boolean',
+        ]);
+
+        $usuario->habilitado = $request->boolean('habilitado');
+        $usuario->save();
+
+        Bitacora::create([
+            'user_id'     => auth()->id(),
+            'modulo'      => 'Usuarios',
+            'accion'      => $usuario->habilitado ? 'HABILITAR' : 'INHABILITAR',
+            'descripcion' => ($usuario->habilitado ? 'Habilitacion' : 'Inhabilitacion') . ' de usuario: ' . $usuario->name . ' (RUT: ' . $usuario->Rut . ')',
+            'ip'          => request()->ip(),
+            'user_agent'  => request()->userAgent(),
+        ]);
+
+        return redirect()->route('admin.usuarios.index')
+            ->with('mensaje', 'Se actualizo el estado del usuario correctamente')
+            ->with('icono', 'success');
+    }
+
     public function confirmDelete($id){
         $usuario = User::findOrFail($id);
         $this->verificarDepartamento($usuario);

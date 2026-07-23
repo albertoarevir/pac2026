@@ -98,6 +98,10 @@ class PacController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'presupuesto' => str_replace('.', '', $request->presupuesto),
+        ]);
+
         $request->validate([
             'year'                  => 'required|integer|min:2000|max:2100',
             'departamento'          => 'required|exists:departamentos,id',
@@ -147,7 +151,9 @@ class PacController extends Controller
             abort(403, 'No tienes permiso para editar este registro.');
         }
 
-        $departamentos        = Departamento::all();
+        $departamentos        = $user->departamento_id === 7
+            ? Departamento::all()
+            : Departamento::where('id', $user->departamento_id)->get();
         $especies             = Especie::where('departamento_id', $pac->departamento_id)->get();
         $codigos              = Codigo::all();
         $clasificadors        = Clasificador::all();
@@ -160,6 +166,10 @@ class PacController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'presupuesto' => str_replace('.', '', $request->presupuesto),
+        ]);
+
         $request->validate([
             'year'                  => 'required',
             'departamento_id'       => 'required',

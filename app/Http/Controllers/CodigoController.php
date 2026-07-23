@@ -24,11 +24,11 @@ class CodigoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'codigopre' => 'required|max:15|regex:/^[A-Z0-9-]+$/',                
-            'detalle' => 'required',   
+            'codigopre' => 'required|max:20|regex:/^[A-Z0-9\.-]+$/',
+            'detalle' => 'required',
             'codigo_id' => 'required|exists:clasificadors,codigo_id',
         ], [
-            'codigopre.regex' => 'El código presupuestario solo permite letras, números y guiones.',
+            'codigopre.regex' => 'El código presupuestario solo permite letras, números, puntos y guiones.',
             'codigo_id.exists' => 'El código seleccionado no es válido.',
         ]);
 

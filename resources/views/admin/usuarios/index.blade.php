@@ -11,7 +11,7 @@
                   <div class="card-tools">
                      <a href="{{url('admin/usuarios/create')}}" class="btn btn-primary">
                         Registrar nuevo usuario
-                     </a>   
+                     </a>
                   </div>
 
 
@@ -19,8 +19,8 @@
             </div>
             <div class="card-body" style="font-size: 14px; color:rgb(12, 13, 14); margin-bottom: 0;">
 
-               
-                
+
+
                 <table id="example1" class="table table-striped table-hover table-bordered" style="width: 100%;">
                     <thead style="background-color: #c0c0c0">
                         <tr>
@@ -29,11 +29,12 @@
                             <th style="width: 25%;">Nombres</th>
                             <th style="width: 20%;">Email</th>
                             <th style="width: 20%;">Dotación</th>
+                            <th style="width: 12%; text-align:center">Habilitado</th>
                             <th style="width: 10%; text-align:center">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
-                      <?php 
+                      <?php
                       $num=1;
                       ?>
                         @foreach($usuarios as $usuario)
@@ -41,9 +42,17 @@
                                 <td style="text-align: center">{{ $num++ }}</td>
                                 <td>{{ $usuario->Rut }}</td>
                                 <td>{{ $usuario->name }}</td>
-                                <td>{{ $usuario->email }}</td>      
-                                <td>{{ $usuario->departamento->detalle}}</td>                           
-                                <td style="text-align: center"> 
+                                <td>{{ $usuario->email }}</td>
+                                <td>{{ $usuario->departamento->detalle}}</td>
+                                <td style="text-align: center">
+                                    <form action="{{ route('admin.usuarios.toggleHabilitado', $usuario->id) }}" method="POST" class="form-habilitado d-inline">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="habilitado" value="{{ $usuario->habilitado ? '0' : '1' }}">
+                                        <input type="checkbox" class="chk-habilitado" style="width: 18px; height: 18px;" {{ $usuario->habilitado ? 'checked' : '' }} title="{{ $usuario->habilitado ? 'Habilitado' : 'Inhabilitado' }}">
+                                    </form>
+                                </td>
+                                <td style="text-align: center">
                                     <div class="btn-group" role="group" aria-label="Basic example">
                                         <a href="{{ url('asignarRol/' . $usuario->id.'/edit') }}" type="button"
                                             class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
@@ -108,12 +117,34 @@
                             ],
                         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
                     });
-                
-                
-                
-                  
+
+                    $(document).on('change', '.chk-habilitado', function() {
+                        var $checkbox = $(this);
+                        var $form = $checkbox.closest('form');
+                        $form.find('input[name="habilitado"]').val($checkbox.is(':checked') ? '1' : '0');
+
+                        Swal.fire({
+                            title: $checkbox.is(':checked') ? '¿Habilitar usuario?' : '¿Inhabilitar usuario?',
+                            text: $checkbox.is(':checked')
+                                ? 'El usuario podrá ingresar nuevamente al sistema.'
+                                : 'El usuario no podrá ingresar al sistema mientras esté inhabilitado.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sí, confirmar',
+                            cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                            if (result.value) {
+                                $form.trigger('submit');
+                            } else {
+                                $checkbox.prop('checked', !$checkbox.is(':checked'));
+                                $form.find('input[name="habilitado"]').val($checkbox.is(':checked') ? '1' : '0');
+                            }
+                        });
+                    });
                 </script>
-                
+
             </div>
         </div>
     </div>

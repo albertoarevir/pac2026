@@ -27,9 +27,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-codigos',  [App\Http\Controllers\PacController::class,  'getCodigos'])->name('get-codigos');
 });
 
+// â”€â”€â”€ Panel de bienvenida: cualquiera con el permiso del pie de pÃ¡gina â”€â”€â”€â”€â”€â”€â”€â”€
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.index');
+});
+
 // â”€â”€â”€ ADMINISTRADOR: gestiÃ³n de usuarios del sistema â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware(['auth', 'role:ADMINISTRADOR'])->group(function () {
-    Route::get('/admin',                          [App\Http\Controllers\AdminController::class,   'index'])->name('admin.index');
     Route::get('/admin/usuarios',                 [App\Http\Controllers\UsuarioController::class, 'index'])->name('admin.usuarios.index');
     Route::get('/admin/usuarios/create',          [App\Http\Controllers\UsuarioController::class, 'create'])->name('admin.usuarios.create');
     Route::post('/admin/usuarios/create',         [App\Http\Controllers\UsuarioController::class, 'store'])->name('admin.usuarios.store');
@@ -38,6 +42,7 @@ Route::middleware(['auth', 'role:ADMINISTRADOR'])->group(function () {
     Route::put('/admin/usuarios/{id}',            [App\Http\Controllers\UsuarioController::class, 'update'])->name('admin.usuarios.update');
     Route::get('/admin/usuarios/{id}/confirm-delete', [App\Http\Controllers\UsuarioController::class, 'confirmDelete'])->name('admin.usuarios.confirmDelete');
     Route::delete('/admin/usuarios/{id}',         [App\Http\Controllers\UsuarioController::class, 'destroy'])->name('admin.usuarios.destroy');
+    Route::patch('/admin/usuarios/{id}/habilitado', [App\Http\Controllers\UsuarioController::class, 'toggleHabilitado'])->name('admin.usuarios.toggleHabilitado');
 
     Route::resource('/asignarRol', \App\Http\Controllers\AsignarController::class)->names('asignar');
     Route::resource('/roles',   \App\Http\Controllers\RoleController::class)->names('roles');

@@ -85,16 +85,34 @@
             {{-- Sidebar --}}
             <div class="sidebar">
                 {{-- Sidebar user panel (optional) --}}
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex flex-column align-items-center text-center">
+                    {{-- 
+                    <div class="mb-2">
+                        @if(session('foto_perfil'))
+                            <img src="{{ session('foto_perfil') }}"
+                                 alt="Foto de perfil"
+                                 class="img-circle elevation-2"
+                                 style="width:70px; height:70px; object-fit:cover;">
+                        @else
+                            <div class="img-circle elevation-2 d-flex align-items-center justify-content-center"
+                                 style="width:70px; height:70px; background-color:#4a5568;">
+                                <i class="fas fa-user" style="font-size:36px; color:#cbd5e0;"></i>
+                            </div>
+                        @endif
+                    </div>
+                    --}}
                     <div class="info">
                         <h4 style="font-size: 14px; color:aliceblue; margin-bottom: 0;">Perfil de Usuario:</h4>
                         <a href="#" class="d-block" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
                             {{ Auth::user()->getRoleNames()->first() }}</a>
+                        @if(session('grado'))
+                            <a href="#" class="d-block" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
+                                {{ session('grado') }}</a>
+                        @endif
                         <a href="#" class="d-block" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
-                            {{ Auth::user()->name }}</a>
+                            {{ session('nombre_completo', Auth::user()->name) }}</a>
                         <a href="#" class="d-block" style="font-size: 14px; color:aliceblue; margin-bottom: 0;">
-                            {{ Auth::user()->departamento->detalle }}</a>
+                            {{ session('dotacion', Auth::user()->departamento->detalle) }}</a>
                     </div>
                 </div>
 
@@ -362,15 +380,16 @@
                                         </a>
                                     </li>
 
-
+                       
                                     <li class="nav-item">
                                         <a href="{{ url('especies/') }}" class="nav-link active">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Especies o Servicios</p>
                                         </a>
                                     </li>
-
-
+                        
+                                
+                       
                                     <li class="nav-item">
                                         <a href="{{ url('clasificador/') }}" class="nav-link active">
                                             <i class="far fa-circle nav-icon"></i>
@@ -560,9 +579,11 @@
                 Versión 1.0.
             </div>
             {{-- Default to the left --}}
+            @can('MENU FOOTER')
             <strong style="font-size: 14px; color:rgb(107, 111, 116); margin-bottom: 0;">Diseñado por Suboficial (Sec.)
-                Rivera - Asesoría Técnica - Dirección de Logística &copy; Marzo - 2025 <a
+                Rivera - Asesoría Técnica - Dirección de Logística &copy; Diciembre - 2025 <a
                     href="{{ url('/admin') }}">"Sistema Registro y Control "Plan Anual de Compras"</a></strong>.
+              @endcan      
         </footer>
     </div>
     {{-- ./wrapper --}}

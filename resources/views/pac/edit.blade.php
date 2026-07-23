@@ -4,20 +4,17 @@
     <div class="row">
         <h2 style="font-size: 20px; color:rgb(218, 13, 13); margin-bottom: 3; margin-left: 35px;">ID Identificador del
             Proyecto N°: <strong>{{ str_pad($pac->id, 4, '0', STR_PAD_LEFT) }}</strong></h2>
-
     </div>
     <br>
     <div class="row">
         <div class="col-md-11" style="margin-left: 0px">
             <div class="card card-outline card-primary">
-
                 <div class="card-body">
-                    <form action="{{ url('/pac/' . $pac->id) }}" method="post" onsubmit="removeCommas()">
+                    <form id="formPac" action="{{ route('pac.update', $pac->id) }}" method="post">
                         @csrf
-                        @method('PUT') <!-- Cambiar el método a PUT para actualización -->
+                        @method('PUT')
                         <div class="col-md-12">
                             <div class="row">
-
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="year">Año Pac:</label>
@@ -72,67 +69,14 @@
                                         @enderror
                                     </div>
                                 </div>
-
-
-                                <script @cspNonce>
-                                    $(document).ready(function() {
-                                        $('#departamento_id').on('change', function() {
-                                            var departamentoId = $(this).val();
-                                            $.ajax({
-                                                type: 'GET',
-                                                url: '{{ route('get-especies') }}',
-                                                data: {
-                                                    departamento: departamentoId
-                                                },
-                                                success: function(data) {
-                                                    $('#especie_id').empty();
-                                                    $('#especie_id').append(
-                                                        '<option value="">Seleccione una especie</option>');
-                                                    $.each(data, function(index, value) {
-                                                        $('#especie_id').append('<option value="' + value.id +
-                                                            '">' + value.detalle + '</option>');
-                                                    });
-                                                }
-                                            });
-                                        });
-
-
-                                        // Actualizar el select de especies al cargar la página
-                                        var departamentoId = $('#departamento_id').val();
-                                        var especieId = $('#especie_id').val();
-                                        if (especieId == '') {
-                                            $.ajax({
-                                                type: 'GET',
-                                                url: '{{ route('get-especies') }}',
-                                                data: {
-                                                    departamento: departamentoId
-                                                },
-                                                success: function(data) {
-                                                    $('#especie_id').empty();
-                                                    $('#especie_id').append('<option value="">Seleccione una especie</option>');
-                                                    $.each(data, function(index, value) {
-                                                        if (value.id == especieId) {
-                                                            $('#especie_id').append('<option value="' + value.id +
-                                                                '" selected>' + value.detalle + '</option>');
-                                                        } else {
-                                                            $('#especie_id').append('<option value="' + value.id + '">' +
-                                                                value.detalle + '</option>');
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                        }
-                                    });
-                                </script>
                             </div>
 
                             <div class="row">
-
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">Clasificador Presupuestario</label>
                                         <select name="clasificador" id="clasificador" class="form-control"
-                                            onchange="cargarCodigos()" @error('clasificador') is-invalid @enderror required>
+                                            @error('clasificador') is-invalid @enderror required>
                                             <option value="">-- Seleccione un clasificador --</option>
                                             @foreach ($clasificadors as $clasificador)
                                                 <option value="{{ $clasificador->codigo_id }}"
@@ -160,21 +104,20 @@
                                                 </option>
                                             @endif
                                         </select>
-                                        @error('codigo')
+                                        @error('codigo_id')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
                                     </div>
                                 </div>
-
                             </div>
 
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Cantidad</label>
-                                        <input type="text" value="{{ $pac->cantidad }}" name="cantidad"
-                                            class="form-control" maxlength="7"
-                                            oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
+                                        <input type="text" id="cantidad"
+                                            value="{{ old('cantidad', $pac->cantidad) }}"
+                                            name="cantidad" class="form-control" maxlength="7" required>
                                         @error('cantidad')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
@@ -184,9 +127,12 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Presupuesto</label>
-                                        <input type="text" id="presupuesto" class="form-control" name="presupuesto"
-                                            value="{{ number_format($pac->presupuesto, 0, ',', '.') }}" maxlength="15"
-                                            oninput="formatNumber(this)" @error('presupuesto') is-invalid @enderror
+                                        <input type="text" id="presupuesto"
+                                            class="form-control @error('presupuesto') is-invalid @enderror"
+                                            name="presupuesto"
+                                            value="{{ old('presupuesto') ? number_format((int) str_replace('.', '', old('presupuesto')), 0, ',', '.') : number_format($pac->presupuesto, 0, ',', '.') }}"
+                                            maxlength="15"
+                                            placeholder="Ej: 1.500.000"
                                             required>
                                         @error('presupuesto')
                                             <small style="color: red">{{ $message }}</small>
@@ -208,14 +154,14 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('fuente_financiamiento_id')
+                                        @error('fuente_financiamiento')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
                                     </div>
-                                    
                                 </div>
+
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Estado del proyecto</label>
@@ -229,42 +175,15 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('estado')
+                                        @error('estado_id')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
                                     </div>
                                 </div>
-
                             </div>
-
-                            <div class="row">
-
-                                {{--
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">Unidad de Compra</label>
-                                    <select name="unidadcompra" id="unidadcompra" class="form-control @error('unidadcompra') is-invalid @enderror" required>
-                                       <option value="">-- Seleccione Unidad --</option>
-                                        @foreach ($unidadcompras as $unidad)
-                                            <option value="{{ $unidad->detalle }}" {{ $pac->unidadcompra == $unidad->detalle ? 'selected' : '' }}>
-                                                {{ $unidad->detalle }}
-                                            </option>
-                                        @endforeach
-                                    </select>                                       
-                                    @error('unidadcompra')
-                                    <small style="color: red">{{$message}}</small>
-                                    @enderror
-                                </div>
-                            </div>
-           --}}
-
-                            </div>
-
-
 
                             <div class="row">
                                 <div class="col-md-5">
-
                                     <div class="form-group">
                                         <label for="observaciones">Observación (Registrar información para clarificar el
                                             estado del registro)</label>
@@ -292,74 +211,99 @@
                                         @enderror
                                     </div>
                                 </div>
-                                
-
-
                             </div>
-
                         </div>
 
                         <hr>
                         <div class="row">
                             <div class="col-md-12">
-                                <a href="{{ url('pac/') }}" class="btn btn-success">Volver al listado</a>
-
+                                <a href="{{ route('pac.index') }}" class="btn btn-success">Volver al listado</a>
                                 <button type="submit" class="btn btn-primary"><i class="bi bi-floppy2"></i> Actualizar
                                     registro</button>
                             </div>
                         </div>
-
-
                     </form>
-
-                    <script @cspNonce>
-                        function cargarCodigos() {
-                            let clasificadorId = document.getElementById('clasificador').value;
-                            if (clasificadorId) {
-                                fetch(`{{ route('get-codigos') }}?clasificador=${clasificadorId}`)
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        let codigoSelect = document.getElementById('codigo');
-                                        codigoSelect.innerHTML = '<option value="">Seleccione un código</option>';
-                                        data.forEach(codigo => {
-                                            // Verificar si el código actual coincide con el valor guardado en el registro
-                                            let selected = codigo.codigopre === "{{ $pac->codigo }}" ? 'selected' : '';
-                                            codigoSelect.innerHTML +=
-                                                `<option value="${codigo.codigopre}" ${selected}>${codigo.codigopre} - ${codigo.detalle}</option>`;
-                                        });
-                                    })
-                                    .catch(error => console.error('Error al cargar los códigos:', error));
-                            } else {
-                                document.getElementById('codigo').innerHTML =
-                                    '<option value="">Selecciona un clasificador primero</option>';
-                            }
-                        }
-
-                        // Llamar a la función cargarCodigos() al cargar la página para precargar los códigos si ya hay un clasificador seleccionado
-                        document.addEventListener('DOMContentLoaded', function() {
-                            let clasificadorId = document.getElementById('clasificador').value;
-                            if (clasificadorId) {
-                                cargarCodigos();
-                            }
-                        });
-
-                        function formatNumber(input) {
-                            let value = input.value.replace(/\./g, ''); // Elimina los puntos existentes
-                            if (!isNaN(value)) {
-                                // Formatea el número con puntos como separadores de miles
-                                input.value = Number(value).toLocaleString('es'); // Alemán usa punto como separador
-                            } else {
-                                input.value = '';
-                            }
-                        }
-
-                        function removeCommas() {
-                            let input = document.getElementById('presupuesto');
-                            input.value = input.value.replace(/\./g, ''); // Elimina los puntos en lugar de las comas
-                        }
-                    </script>
                 </div>
             </div>
         </div>
     </div>
+
+    <script @cspNonce>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var currentCodigo = @json($pac->codigo);
+
+        // -- Presupuesto: solo numeros con puntos de miles --
+        var presupuestoInput = document.getElementById('presupuesto');
+
+        function formatMiles(input) {
+            var raw = input.value.replace(/[^0-9]/g, '');
+            if (raw === '') { input.value = ''; return; }
+            input.value = parseInt(raw, 10).toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        presupuestoInput.addEventListener('input', function () { formatMiles(this); });
+
+        // -- Cantidad: solo digitos --
+        document.getElementById('cantidad').addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // -- Quitar puntos de miles antes de enviar --
+        document.getElementById('formPac').addEventListener('submit', function () {
+            presupuestoInput.value = presupuestoInput.value.replace(/\./g, '');
+        });
+
+        // -- Clasificador -> Codigo --
+        function cargarCodigos(selectedCodigo) {
+            var clasificadorId = document.getElementById('clasificador').value;
+            if (clasificadorId) {
+                fetch('{{ route("get-codigos") }}?clasificador=' + clasificadorId)
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        var sel = document.getElementById('codigo');
+                        sel.innerHTML = '<option value="">Seleccione un codigo</option>';
+                        data.forEach(function (codigo) {
+                            var selected = (selectedCodigo && String(codigo.codigopre) === String(selectedCodigo))
+                                ? ' selected' : '';
+                            sel.innerHTML += '<option value="' + codigo.codigopre + '"' + selected + '>' +
+                                codigo.codigopre + ' - ' + codigo.detalle + '</option>';
+                        });
+                    })
+                    .catch(function (e) { console.error('Error al cargar codigos:', e); });
+            } else {
+                document.getElementById('codigo').innerHTML =
+                    '<option value="">Selecciona un clasificador primero</option>';
+            }
+        }
+
+        document.getElementById('clasificador').addEventListener('change', function () {
+            cargarCodigos(null);
+        });
+
+        // -- Departamento -> Especie (AJAX) --
+        $('#departamento_id').on('change', function () {
+            var departamentoId = $(this).val();
+            $.ajax({
+                type: 'GET',
+                url: '{{ route("get-especies") }}',
+                data: { departamento: departamentoId },
+                success: function (data) {
+                    $('#especie_id').empty();
+                    $('#especie_id').append('<option value="">Seleccione una especie</option>');
+                    $.each(data, function (index, value) {
+                        $('#especie_id').append('<option value="' + value.id + '">' + value.detalle + '</option>');
+                    });
+                }
+            });
+        });
+
+        // -- Cargar codigos al inicio preseleccionando el codigo guardado --
+        if (document.getElementById('clasificador').value) {
+            cargarCodigos(currentCodigo);
+        }
+
+    });
+    </script>
 @endsection

@@ -26,14 +26,15 @@
         <div class="card card-outline card-primary" style="margin-left: 0px;">
             <div class="card-body badge-btn" >
                 <h2 style="font-size: 18px; color:rgb(8, 8, 8)">
-                    <strong>Grado:</strong>
+                    <strong>Apellidos y Nombres:</strong>
                 </h2>
                 <h2 style="font-size: 16px; color:rgb(8, 8, 8); margin-bottom: 0;">
-                    {{$user->Grado}}
+                    {{$user->name}}
                 </h2>
             </div>
         </div>
     </div>
+    {{--
     <div class="col-md-4">
         <div class="card card-outline card-primary" style="margin-left: 0px;">
             <div class="card-body badge-btn" >
@@ -46,6 +47,7 @@
             </div>
         </div>
     </div>
+    --}}
     <div class="col-md-2">
         <div class="card card-outline card-primary" style="margin-left: 0px;">
             <div class="card-body badge-btn" >

@@ -9,14 +9,14 @@
         <div class="col-md-9" style="margin-left: 20px">
             <div class="card card-outline card-primary">
                 <div class="card-body">
-                    <form action="{{ url('/presupuesto') }}" method="post" onsubmit="removeCommas()">
+                    <form id="formPresupuesto" action="{{ url('/presupuesto') }}" method="post">
                         @csrf
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label for="year">Año Pac:</label>
-                                        <select class="form-control" name = "year" id="year"
+                                        <select class="form-control" name="year" id="year"
                                             @error('year') is-invalid @enderror required>
                                             <option value="">Seleccione un año</option>
                                             @php
@@ -49,31 +49,6 @@
                                     </div>
                                 </div>
 
-                                <script @cspNonce>
-                                    $(document).ready(function() {
-                                        $('#departamento').on('change', function() {
-                                            var departamentoId = $(this).val();
-                                            $.ajax({
-                                                type: 'GET',
-                                                url: '{{ route('get-especies') }}',
-                                                data: {
-                                                    departamento: departamentoId
-                                                },
-                                                success: function(data) {
-                                                    console.log(data);
-                                                    $('#especie').empty();
-                                                    $('#especie').append(
-                                                        '<option value="">Seleccione una especie o servicio</option>');
-                                                    $.each(data, function(index, value) {
-                                                        $('#especie').append('<option value="' + value.id + '">' +
-                                                            value.detalle + '</option>');
-                                                    });
-                                                }
-                                            });
-                                        });
-                                    });
-                                </script>
-
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="">Clasificador Presupuestario</label>
@@ -81,11 +56,13 @@
                                             @error('clasificador') is-invalid @enderror required>
                                             <option value="">-- Seleccione un clasificador --</option>
                                             @foreach ($clasificadors as $clasificador)
-                                                <option value="{{ $clasificador->codigo_id }}">
-                                                    {{ $clasificador->codigo_id }} - {{ $clasificador->detalle }}</option>
+                                                <option value="{{ $clasificador->codigo_id }}"
+                                                    {{ old('clasificador') == $clasificador->codigo_id ? 'selected' : '' }}>
+                                                    {{ $clasificador->codigo_id }} - {{ $clasificador->detalle }}
+                                                </option>
                                             @endforeach
                                         </select>
-                                        @error('especie')
+                                        @error('clasificador')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -100,7 +77,7 @@
                                             @error('codigo_id') is-invalid @enderror required>
                                             <option value="">Selecciona un clasificador primero</option>
                                         </select>
-                                        @error('codigo')
+                                        @error('codigo_id')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -109,9 +86,13 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Presupuesto $$</label>
-                                        <input type="text" id="presupuesto" class="form-control" name="presupuesto"
-                                            value="{{ old('presupuesto') }}" maxlength="15" oninput="formatNumber(this)"
-                                            @error('presupuesto') is-invalid @enderror required>
+                                        <input type="text" id="presupuesto"
+                                            class="form-control @error('presupuesto') is-invalid @enderror"
+                                            name="presupuesto"
+                                            value="{{ old('presupuesto') ? number_format((int) str_replace('.', '', old('presupuesto')), 0, ',', '.') : '' }}"
+                                            maxlength="15"
+                                            placeholder="Ej: 1.500.000"
+                                            required>
                                         @error('presupuesto')
                                             <small style="color: red">{{ $message }}</small>
                                         @enderror
@@ -119,70 +100,12 @@
                                 </div>
                             </div>
 
-                            <script @cspNonce>
-                                document.getElementById('clasificador').addEventListener('change', cargarCodigos);
-
-                                function cargarCodigos() {
-                                    let clasificadorId = document.getElementById('clasificador').value;
-                                    if (clasificadorId) {
-                                        fetch(`{{ route('get-codigos') }}?clasificador=${clasificadorId}`)
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                let codigoSelect = document.getElementById('codigo');
-                                                codigoSelect.innerHTML = '<option value="">Seleccione un código</option>';
-                                                data.forEach(codigo => {
-                                                    codigoSelect.innerHTML +=
-                                                        `<option value="${codigo.codigopre}">${codigo.codigopre} - ${codigo.detalle}</option>`;
-                                                });
-                                            })
-                                            .catch(error => console.error('Error al cargar los códigos:', error));
-                                    } else {
-                                        document.getElementById('codigo').innerHTML =
-                                            '<option value="">Selecciona un clasificador primero</option>';
-                                    }
-                                }
-
-                                document.getElementById('codigo').addEventListener('change', verificarDuplicado);
-                                document.getElementById('departamento').addEventListener('change', function() {
-                                    if (document.getElementById('codigo').value) verificarDuplicado();
-                                });
-                                document.getElementById('year').addEventListener('change', function() {
-                                    if (document.getElementById('codigo').value) verificarDuplicado();
-                                });
-
-                                function verificarDuplicado() {
-                                    const departamentoId = document.getElementById('departamento').value;
-                                    const codigoId      = document.getElementById('codigo').value;
-                                    const year          = document.getElementById('year').value;
-
-                                    if (!departamentoId || !codigoId || !year) return;
-
-                                    fetch(`{{ route('presupuesto.check-duplicate') }}?departamento_id=${departamentoId}&codigo_id=${encodeURIComponent(codigoId)}&year=${year}`)
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.existe) {
-                                                const codigoTexto = document.getElementById('codigo').selectedOptions[0].text;
-                                                document.getElementById('modalCodigoTexto').textContent = codigoTexto;
-                                                document.getElementById('modalMonto').textContent = '$ ' + data.monto;
-                                                $('#modalDuplicado').modal('show');
-                                            }
-                                        })
-                                        .catch(error => console.error('Error al verificar duplicado:', error));
-                                }
-
-                                $(document).ready(function() {
-                                    $('#modalDuplicado').on('hidden.bs.modal', function() {
-                                        window.location.href = '{{ route('presupuesto.index') }}';
-                                    });
-                                });
-                            </script>
-
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="form-group">
                                         <label for="observacion">Hoja de Vida Presupuesto (Registrar información para clarificar el
                                             estado del PRESUPUESTO)</label>
-                                        <textarea name="observacion" class="form-control" rows="8"></textarea>
+                                        <textarea name="observacion" class="form-control" rows="8">{{ old('observacion') }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -196,22 +119,6 @@
                                         registro</button>
                                 </div>
                             </div>
-
-                            <script @cspNonce>
-                                function formatNumber(input) {
-                                    let value = input.value.replace(/\./g, '');
-                                    if (!isNaN(value)) {
-                                        input.value = Number(value).toLocaleString('es');
-                                    } else {
-                                        input.value = '';
-                                    }
-                                }
-
-                                function removeCommas() {
-                                    let input = document.getElementById('presupuesto');
-                                    input.value = input.value.replace(/\./g, '');
-                                }
-                            </script>
                         </div>
                     </form>
                 </div>
@@ -241,5 +148,98 @@
             </div>
         </div>
     </div>
+
+    <script @cspNonce>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var oldClasificador = @json(old('clasificador', ''));
+        var oldCodigo       = @json(old('codigo_id', ''));
+
+        // ── Presupuesto: solo numeros con puntos de miles (formato chileno) ──
+        var presupuestoInput = document.getElementById('presupuesto');
+
+        function formatMiles(input) {
+            var raw = input.value.replace(/[^0-9]/g, '');
+            if (raw === '') { input.value = ''; return; }
+            input.value = parseInt(raw, 10).toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        presupuestoInput.addEventListener('input', function () { formatMiles(this); });
+
+        // ── Quitar puntos de miles antes de enviar ──
+        document.getElementById('formPresupuesto').addEventListener('submit', function () {
+            presupuestoInput.value = presupuestoInput.value.replace(/\./g, '');
+        });
+
+        // ── Clasificador -> Codigo ──
+        function cargarCodigos() {
+            var clasificadorId = document.getElementById('clasificador').value;
+            if (clasificadorId) {
+                fetch('{{ route("get-codigos") }}?clasificador=' + clasificadorId)
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        var sel = document.getElementById('codigo');
+                        sel.innerHTML = '<option value="">Seleccione un codigo</option>';
+                        data.forEach(function (codigo) {
+                            var selected = (oldCodigo !== '' && String(codigo.codigopre) === String(oldCodigo))
+                                ? ' selected' : '';
+                            sel.innerHTML += '<option value="' + codigo.codigopre + '"' + selected + '>' +
+                                codigo.codigopre + ' - ' + codigo.detalle + '</option>';
+                        });
+                        // Si se restauro un codigo, verificar duplicado automaticamente
+                        if (oldCodigo !== '' && sel.value) { verificarDuplicado(); }
+                    })
+                    .catch(function (e) { console.error('Error al cargar codigos:', e); });
+            } else {
+                document.getElementById('codigo').innerHTML =
+                    '<option value="">Selecciona un clasificador primero</option>';
+            }
+        }
+
+        document.getElementById('clasificador').addEventListener('change', function () {
+            oldCodigo = '';
+            cargarCodigos();
+        });
+
+        // ── Verificacion de duplicado ──
+        function verificarDuplicado() {
+            var departamentoId = document.getElementById('departamento').value;
+            var codigoId       = document.getElementById('codigo').value;
+            var year           = document.getElementById('year').value;
+
+            if (!departamentoId || !codigoId || !year) return;
+
+            fetch('{{ route("presupuesto.check-duplicate") }}?departamento_id=' + departamentoId +
+                '&codigo_id=' + encodeURIComponent(codigoId) + '&year=' + year)
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.existe) {
+                        var codigoTexto = document.getElementById('codigo').selectedOptions[0].text;
+                        document.getElementById('modalCodigoTexto').textContent = codigoTexto;
+                        document.getElementById('modalMonto').textContent = '$ ' + data.monto;
+                        $('#modalDuplicado').modal('show');
+                    }
+                })
+                .catch(function (e) { console.error('Error al verificar duplicado:', e); });
+        }
+
+        document.getElementById('codigo').addEventListener('change', verificarDuplicado);
+        document.getElementById('departamento').addEventListener('change', function () {
+            if (document.getElementById('codigo').value) verificarDuplicado();
+        });
+        document.getElementById('year').addEventListener('change', function () {
+            if (document.getElementById('codigo').value) verificarDuplicado();
+        });
+
+        $('#modalDuplicado').on('hidden.bs.modal', function () {
+            window.location.href = '{{ route("presupuesto.index") }}';
+        });
+
+        // ── Restaurar select dinamico si vuelve con errores de validacion ──
+        if (oldClasificador !== '') { cargarCodigos(); }
+
+    });
+    </script>
 
 @endsection

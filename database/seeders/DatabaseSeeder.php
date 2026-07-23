@@ -41,7 +41,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Alberto Rivera',
             'email' => 'admin@admin.com',
             'departamento_id' => '7',
-            'password' => Hash::make('12345678')
+            'password' => Hash::make('12345678'),
+            'habilitado' => true,
         ])->assignRole('ADMINISTRADOR');
 
      }
