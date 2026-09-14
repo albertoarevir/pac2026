@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cookie;
 use App\Models\User;
 use App\Models\Bitacora;
 
@@ -154,8 +155,21 @@ class ApiLoginController extends Controller
                 'user_agent'  => $request->userAgent(),
             ]);
 
+            // Emitir cookie de token_de_acceso HttpOnly desde el servidor (Mitigación 1.2 - Anti XSS)
+            $tokenCookie = cookie(
+                'token_de_acceso',
+                $token,
+                60,                 // Expiración: 60 minutos
+                '/',                // Path
+                null,               // Domain
+                $request->secure(), // Secure (se activa automáticamente bajo HTTPS)
+                true,               // HttpOnly -> Impide acceso/lectura desde JavaScript (document.cookie)
+                false,              // Raw
+                'Strict'            // SameSite Strict
+            );
+
             // Todo usuario autenticado con rol asignado aterriza en el panel principal
-            return redirect()->route('admin.index');
+            return redirect()->route('admin.index')->withCookie($tokenCookie);
 
         } catch (\Exception $e) {
             Log::error('Error en proceso de login: ' . $e->getMessage(), ['rut' => $rut, 'ip' => $ip]);

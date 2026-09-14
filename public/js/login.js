@@ -26,7 +26,6 @@ function iniciar_sesion() {
     }).then(function (response) {
         access_token = response.data.success.access_token;
 
-        document.cookie = 'token_de_acceso=' + access_token + '; SameSite=Strict; Path=/; Max-Age=3600';
         document.getElementById('accessToken').value = access_token;
         document.getElementById('rutHidden').value   = rut;
 

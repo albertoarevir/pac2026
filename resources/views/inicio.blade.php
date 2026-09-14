@@ -110,10 +110,7 @@
 
                 access_token = response.data.success.access_token;
 
-                // Guardamos el token en cookie
-                document.cookie = 'token_de_acceso=' + access_token + '; SameSite=Strict; Path=/; Max-Age=3600';
-
-                // Insertar token y rut en los inputs ocultos para enviarlos al backend Laravel
+                // Insertar token y rut en los inputs ocultos para enviarlos al backend Laravel (el backend emitirá la cookie HttpOnly segura)
                 document.getElementById('accessToken').value = access_token;
                 document.getElementById('rutHidden').value = document.getElementById('rut_funcionario').value;
 
